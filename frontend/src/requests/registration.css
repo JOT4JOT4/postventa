@@ -1,0 +1,55 @@
+.postventa-page { min-height: 100vh; background: #f4f5f8; color: #202b44; color-scheme: light; font-family: Inter, system-ui, sans-serif; }
+.postventa-page * { box-sizing: border-box; }
+.module-header { display: flex; justify-content: space-between; gap: 1rem; padding: 1.4rem 5vw; background: #202b44; color: white; }
+.module-header strong { font-size: 1.1rem; }
+.module-header strong span { margin: 0 .6rem; color: #ed4160; }
+.module-label { font-size: .85rem; color: #d8deea; }
+.registration-layout { max-width: 1000px; margin: auto; padding: 3rem 1.5rem 4rem; }
+.page-intro { margin-bottom: 2rem; }
+.eyebrow { color: #657086; font-size: .72rem; letter-spacing: .13em; font-weight: 700; }
+.page-intro h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); letter-spacing: -.035em; margin: .65rem 0; font-weight: 750; }
+.page-intro > p:not(.eyebrow) { color: #566176; line-height: 1.6; }
+.initial-status { display: flex; align-items: center; gap: .75rem; margin-top: 1rem; font-size: .85rem; }
+.initial-status strong { background: #fff0cb; color: #795400; border-radius: 1rem; padding: .25rem .7rem; }
+.registration-card { background: white; border: 1px solid #dce0e8; border-radius: .65rem; box-shadow: 0 4px 20px #202b4405; }
+.registration-section { padding: 1.75rem 2rem; }
+.registration-section + .registration-section { border-top: 1px solid #e7eaf0; }
+.registration-section h2 { display: flex; align-items: center; gap: .8rem; margin: 0 0 .9rem; font-size: 1.1rem; font-weight: 700; }
+.registration-section h2 > span { font-size: .75rem; color: #8a3347; background: #fceef1; padding: .45rem; border-radius: .25rem; }
+.field-help { color: #657086; font-size: .85rem; line-height: 1.5; margin: .5rem 0 1.2rem; }
+.registration-card label, .registration-card legend { font-size: .9rem; font-weight: 600; }
+.registration-card label[for] { display: block; margin: .8rem 0 .5rem; }
+.registration-card input[type=number], .registration-card textarea { width: 100%; border: 1px solid #aab3c2; border-radius: .3rem; padding: .8rem; color: #202b44; background: #fff; font: inherit; }
+.registration-card input::placeholder, .registration-card textarea::placeholder { color: #6d7585; }
+.registration-card textarea { resize: vertical; min-height: 8rem; }
+.purchase-search { display: flex; gap: .7rem; }
+.registration-card button { font: inherit; font-weight: 650; border-radius: .3rem; padding: .8rem 1rem; cursor: pointer; white-space: nowrap; }
+.secondary-button { color: #202b44; background: white; border: 1px solid #aab3c2; }
+.primary-button { color: white; background: #bb1237; border: 1px solid #bb1237; }
+.primary-button:hover:not(:disabled) { background: #990e2c; }
+.registration-card button:disabled { opacity: .55; cursor: not-allowed; }
+.registration-card :focus-visible { outline: 3px solid #346ad3; outline-offset: 3px; }
+.customer-summary { display: grid; gap: .35rem; margin: 1.3rem 0; background: #f5f7fb; padding: 1rem; border-radius: .3rem; }
+.customer-summary span, .customer-summary small { font-size: .8rem; color: #586379; }
+.registration-card fieldset { border: 0; padding: 0; margin: 1.2rem 0; min-width: 0; }
+.registration-card legend { margin-bottom: .7rem; }
+.registration-card legend small { font-weight: 400; }
+.product-option { display: flex; gap: .7rem; align-items: center; border: 1px solid #dce0e8; padding: .9rem; margin-top: .5rem; border-radius: .3rem; }
+.product-option small { display: block; font-weight: 400; color: #657086; margin-top: .3rem; }
+.registration-card input[type=checkbox], .registration-card input[type=radio] { accent-color: #bb1237; width: 1rem; height: 1rem; }
+.request-types { display: flex; flex-wrap: wrap; gap: .6rem; }
+.type-option { display: flex; align-items: center; gap: .5rem; padding: .65rem .9rem; border: 1px solid #c3cad6; border-radius: .3rem; cursor: pointer; }
+.type-option.selected { border-color: #bb1237; background: #fff5f7; }
+.form-error, .form-success { margin: 0 2rem 1.5rem; padding: 1rem; border-radius: .3rem; line-height: 1.5; }
+.form-error { background: #fff1f1; border: 1px solid #e9b1b1; color: #8d2020; }
+.form-success { display: grid; gap: .4rem; background: #eff8f2; border: 1px solid #9dceb0; color: #205c39; }
+.form-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.4rem 2rem; border-top: 1px solid #e7eaf0; }
+.form-footer p { color: #657086; font-size: .8rem; }
+@media (max-width: 600px) {
+  .module-label { display: none; }
+  .registration-layout { padding: 2rem 1rem; }
+  .registration-section { padding: 1.3rem; }
+  .purchase-search, .form-footer { flex-direction: column; align-items: stretch; }
+  .form-footer { padding: 1.3rem; }
+  .form-error, .form-success { margin: 0 1.3rem 1.3rem; }
+}
