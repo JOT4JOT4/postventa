@@ -1,11 +1,10 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication, ServiceUnavailableException, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
 import { PurchaseGateway } from '../../src/requests/request.types';
 import { RequestsController } from '../../src/requests/requests.controller';
 import { RequestsService } from '../../src/requests/requests.service';
-import { PendingPurchaseGateway } from '../../src/requests/pending-purchase.gateway';
 import { fictionalPurchase, validInput } from './fixtures';
 
 describe('HU-01: contrato HTTP de registro', () => {
@@ -55,7 +54,7 @@ describe('HU-01: contrato HTTP de registro', () => {
       reason: 'Faltan piezas.', type, status: 'Abierto',
     });
     expect(response.body.id).toBeGreaterThan(0);
-    expect(manager.save).toHaveBeenCalledTimes(2);
+    expect(manager.save).toHaveBeenCalledTimes(3);
   });
 
   it('asigna identificadores diferentes', async () => {
@@ -84,21 +83,21 @@ describe('HU-01: contrato HTTP de registro', () => {
   it('rechaza una compra inexistente', async () => {
     gateway.findById.mockResolvedValue(null);
     await request(app.getHttpServer()).post('/postventa/solicitudes').send(validInput).expect(404);
-    expect(transaction).not.toHaveBeenCalled();
+    expect(manager.save).not.toHaveBeenCalled();
   });
 
   it('rechaza un producto ajeno a la compra', async () => {
     await request(app.getHttpServer()).post('/postventa/solicitudes')
       .send({ ...validInput, purchaseItemIds: [999] }).expect(400);
-    expect(transaction).not.toHaveBeenCalled();
+    expect(manager.save).not.toHaveBeenCalled();
   });
 
-  it('no permite guardar cuando Ventas está pendiente', async () => {
-    gateway.findById.mockImplementation((id: number) => new PendingPurchaseGateway().findById(id));
+  it('no permite guardar cuando los datos compartidos no están disponibles', async () => {
+    gateway.findById.mockRejectedValue(new ServiceUnavailableException('Datos compartidos no disponibles.'));
     await request(app.getHttpServer()).get('/postventa/compras/10').expect(503);
     const response = await request(app.getHttpServer()).post('/postventa/solicitudes').send(validInput).expect(503);
-    expect(response.body.message).toContain('Ventas está pendiente');
-    expect(transaction).not.toHaveBeenCalled();
+    expect(response.body.message).toContain('no disponibles');
+    expect(manager.save).not.toHaveBeenCalled();
   });
 
   it('oculta detalles internos al fallar la persistencia', async () => {

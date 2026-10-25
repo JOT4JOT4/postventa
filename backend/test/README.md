@@ -4,5 +4,6 @@
 - `jest-e2e.json`: configuración original de descubrimiento de pruebas HTTP.
 - `requests/`: pruebas reales de HU-01, sus contratos HTTP y PostgreSQL.
 
-Ejecutar `npm run test:hu01` desde backend. El adaptador real pendiente no se
-reemplaza en producción; sus dobles existen únicamente en las pruebas.
+Ejecutar `npm run test:hu01` desde backend. Las pruebas HTTP aisladas usan dobles;
+las suites de integración usan el adaptador real y tablas ficticias de prueba
+en PostgreSQL. No se conecta al ERP real del curso durante estas verificaciones.

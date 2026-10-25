@@ -1,9 +1,14 @@
 # Persistencia
 
-`data-source.ts` exporta un `DataSource` de TypeORM para PostgreSQL. Lee `DATABASE_*`
-desde el entorno y descubre entidades y migraciones con rutas relativas al propio
-archivo, tanto en `src` como en el resultado compilado `dist`.
+- `data-source.ts`: exporta el `DataSource` PostgreSQL, lee `DATABASE_*` y descubre
+  entidades y migraciones con rutas relativas, tanto en `src` como en `dist`.
+- `registration-upgrade.ts`: `ensureSharedSchema(runner)` comprueba las estructuras
+  externas sin crearlas; `ensureCaseTable(runner)` conserva o crea RECLAMO y prepara
+  sus FK y generador de IDs; `copyLegacyRequests(runner)` valida y copia solicitudes
+  antiguas sin borrarlas. Las funciones reciben el QueryRunner de la migración y
+  retornan `Promise<void>`; cualquier inconsistencia revierte la operación.
+- `migrations/`: DDL y actualización versionados.
 
-`migrations/` contiene el DDL versionado. `synchronize` permanece desactivado.
-Aplicar con `npm run migration:run` desde backend; en Docker se aplica al arrancar.
-No ejecutar migraciones sobre una base compartida sin revisar los acuerdos del grupo.
+`synchronize` permanece desactivado. Cargar primero el SQL aprobado de los módulos
+externos y aplicar `npm run migration:run` desde backend. No se conecta a una BD
+remota automáticamente ni se cargan maestros ficticios en el entorno de ejecución.

@@ -16,7 +16,7 @@ const response = (body: unknown, ok = true) => ({ ok, json: async () => body });
 
 async function loadPurchase() {
   const user = userEvent.setup();
-  await user.type(screen.getByLabelText('Identificador de compra'), '10');
+  await user.type(screen.getByLabelText('Identificador de venta'), '10');
   await user.click(screen.getByRole('button', { name: 'Cargar compra' }));
   await screen.findByText('Cliente ficticio de prueba');
   return user;
@@ -29,13 +29,13 @@ describe('HU-01: formulario de registro', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('muestra la integración pendiente sin inventar una compra', async () => {
-    fetchMock.mockResolvedValue(response({ message: 'La conexión con Ventas está pendiente.' }, false));
+  it('informa que los datos compartidos no están disponibles sin inventar una compra', async () => {
+    fetchMock.mockResolvedValue(response({ message: 'Los datos compartidos del ERP no están disponibles.' }, false));
     render(<RegistrationForm />);
     const user = userEvent.setup();
-    await user.type(screen.getByLabelText('Identificador de compra'), '10');
+    await user.type(screen.getByLabelText('Identificador de venta'), '10');
     await user.click(screen.getByRole('button', { name: 'Cargar compra' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Ventas está pendiente');
+    expect(await screen.findByRole('alert')).toHaveTextContent('no están disponibles');
     expect(screen.getByRole('button', { name: 'Registrar solicitud' })).toBeDisabled();
   });
 
@@ -72,7 +72,7 @@ describe('HU-01: formulario de registro', () => {
     fetchMock.mockResolvedValueOnce(response(purchase));
     render(<RegistrationForm />);
     const user = await loadPurchase();
-    await user.clear(screen.getByLabelText('Identificador de compra'));
+    await user.clear(screen.getByLabelText('Identificador de venta'));
     expect(screen.queryByText('Cliente ficticio de prueba')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Registrar solicitud' })).toBeDisabled();
   });
@@ -81,7 +81,7 @@ describe('HU-01: formulario de registro', () => {
     fetchMock.mockRejectedValue(new TypeError('fallo de red'));
     render(<RegistrationForm />);
     const user = userEvent.setup();
-    await user.type(screen.getByLabelText('Identificador de compra'), '10');
+    await user.type(screen.getByLabelText('Identificador de venta'), '10');
     await user.click(screen.getByRole('button', { name: 'Cargar compra' }));
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('No se pudo conectar'));
   });

@@ -1,23 +1,47 @@
-# Migración inicial de HU-01
+# Migraciones de HU-01
 
-`1792800000000-CreateRequests.ts` contiene `CreateRequests1792800000000`:
+## Archivos
 
-- `up(queryRunner): Promise<void>` crea `peticion`, `detalle_peticion` y el índice de venta.
-- `down(queryRunner): Promise<void>` elimina esas dos tablas; solo usar tras evaluar
-  la pérdida de solicitudes. No se ejecuta automáticamente.
-- `.gitkeep` es el marcador original de la carpeta.
+- `1792800000000-CreateRequests.ts`: migración histórica que creó `peticion` y
+  `detalle_peticion`. Se mantiene sin reescribir para respetar bases ya migradas.
+  `up(queryRunner)` crea ese esquema antiguo; `down` elimina sus tablas y no debe
+  ejecutarse sobre datos que se quieran conservar. `.gitkeep` es el marcador original.
+- `1792886400000-AlignRegistrationSchema.ts`: `up(runner)` comprueba el esquema
+  compartido y actualiza el almacenamiento mediante las funciones de
+  `../registration-upgrade.ts`. `down()` se detiene expresamente: la reversión
+  exige conciliación manual para no romper referencias de otros módulos.
 
-`peticion` guarda ID entero autogenerado, referencias de venta y cliente, tipo,
-motivo, estado inicial Abierto y fecha de registro con zona horaria.
-`detalle_peticion` guarda ID propio, petición y línea del pedido. Tiene FK local a
-petición, unicidad por petición/línea y restricciones de identificadores positivos.
+## Resultado
 
-Es un subconjunto del modelo del Sprint 1 para HU-01, no el esquema definitivo del
-módulo. `tipo` se incorpora porque lo exige la historia y falta en el ER.
-No se crean maestros ni tablas de Ventas. Las FK externas de `id_venta`, `id_cliente`
-y `id_detalle_pedido` quedan pendientes hasta recibir nombres y tipos acordados.
-El puerto de Ventas deberá confirmar pertenencia y cliente antes de cualquier alta.
+- `reclamo`: los cinco campos del diagrama; FK a `venta` y `cliente`. Se crea si
+  no existe. Si ya existe se conserva, se comprueban sus campos y se completan
+  las FK faltantes. Si su ID entero no tenía generador, se añade una secuencia
+  para asignar identificadores sin pedirlos al usuario.
+- `postventa_registro`: `id_reclamo` PK/FK, `tipo` restringido a los cuatro valores
+  y `fecha_registro` con zona horaria.
+- `postventa_registro_producto`: ID autogenerado, FK al caso y a
+  `detalle_pedido.id_detalle_ped`; unicidad por caso/línea.
 
-Empleado/identidad (HU-16), prioridad, resolución, cantidades, observaciones y las
-tablas de cambios, devoluciones y reembolsos no se implementan en esta historia.
-La fecha usa `timestamptz` para conservar el instante de registro; el ER usaba `date`.
+Las dos tablas auxiliares amplían el diagrama únicamente para conservar el tipo
+seleccionado y los productos exigidos por HU-01, ausentes en RECLAMO. No agregan
+funcionalidades ni modifican tablas ajenas. Deben reflejarse en el modelo compartido.
+
+La actualización copia los casos anteriores, sus IDs, motivos, estados, tipos,
+fechas y líneas. Mantiene las tablas de origen como archivo; la aplicación deja
+de escribirlas. Si falta una referencia del ERP, un cliente no coincide o hay
+colisión de IDs con RECLAMO, falla y se revierte la migración completa. No sobrescribe
+ni elimina casos. Una segunda ejecución usa el historial de TypeORM y no repite la copia.
+La secuencia del nuevo caso se ajusta para no reutilizar IDs existentes.
+
+## Prerrequisito y ejecución
+
+Cargar primero las tablas compartidas acordadas: `cliente`, `pedido`, `venta`,
+`detalle_pedido` e `inv_producto`, con sus claves del diagrama. Luego ejecutar
+`npm run migration:run` desde backend. Docker lo hace al iniciar el backend.
+Si faltan esas estructuras, la actualización falla con un mensaje administrativo;
+no las crea ni incorpora datos ficticios para sustituirlas.
+
+No ejecutar sobre una BD compartida sin coordinar la ventana de migración. La
+migración completa corre en una transacción y bloquea escrituras en RECLAMO durante
+la copia. Antes de ejecutarla conviene revisar respaldo y correspondencia de los
+IDs de casos antiguos con los de las tablas compartidas.

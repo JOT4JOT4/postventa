@@ -1,10 +1,11 @@
 import {
-  BadRequestException, Injectable, NotFoundException, ServiceUnavailableException,
+  BadRequestException, HttpException, Injectable, NotFoundException, ServiceUnavailableException,
 } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { CreateRequestDto } from './create-request.dto';
 import { RequestItemEntity } from './request-item.entity';
 import { RequestEntity } from './request.entity';
+import { RequestRegistrationEntity } from './request-registration.entity';
 import { INITIAL_STATUS, PurchaseGateway } from './request.types';
 
 @Injectable()
@@ -14,32 +15,35 @@ export class RequestsService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async purchaseContext(id: number) {
-    const purchase = await this.purchases.findById(id);
+  async purchaseContext(id: number, manager?: EntityManager) {
+    const purchase = await this.purchases.findById(id, manager);
     if (!purchase) throw new NotFoundException('La compra indicada no existe.');
     return purchase;
   }
 
   async create(input: CreateRequestDto) {
-    const purchase = await this.purchaseContext(input.purchaseId);
-    if (input.purchaseItemIds.some((id) => !purchase.items.some((item) => item.id === id))) {
-      throw new BadRequestException('Los productos seleccionados no pertenecen a la compra.');
-    }
     try {
       return await this.dataSource.transaction(async (manager) => {
+        const purchase = await this.purchaseContext(input.purchaseId, manager);
+        if (input.purchaseItemIds.some((id) => !purchase.items.some((item) => item.id === id))) {
+          throw new BadRequestException('Los productos seleccionados no pertenecen a la compra.');
+        }
         const request = await manager.save(RequestEntity, manager.create(RequestEntity, {
           purchaseId: purchase.id,
           customerId: purchase.customer.id,
-          type: input.type,
           reason: input.reason,
           status: INITIAL_STATUS,
         }));
+        const registration = await manager.save(RequestRegistrationEntity,
+          manager.create(RequestRegistrationEntity, { requestId: request.id, type: input.type }));
         await manager.save(RequestItemEntity, input.purchaseItemIds.map((purchaseItemId) =>
           manager.create(RequestItemEntity, { requestId: request.id, purchaseItemId }),
         ));
-        return { ...request, purchaseItemIds: input.purchaseItemIds };
+        return { ...request, type: registration.type, createdAt: registration.createdAt,
+          purchaseItemIds: input.purchaseItemIds };
       });
-    } catch {
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
       throw new ServiceUnavailableException(
         'No fue posible guardar la solicitud. Inténtalo nuevamente más tarde.',
       );

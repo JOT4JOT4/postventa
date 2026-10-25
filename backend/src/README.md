@@ -8,4 +8,5 @@
 - `requests/`: API y lógica de registro HU-01.
 
 Las entradas pasan del controlador al servicio, que consulta el puerto de Ventas
-y persiste cabecera y detalles dentro de una transacción.
+y persiste RECLAMO, metadatos y productos dentro de una transacción, volviendo a
+verificar la venta en la misma conexión antes de guardar.

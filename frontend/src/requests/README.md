@@ -11,5 +11,8 @@
 El formulario requiere compra verificada, al menos un producto, tipo y motivo.
 No solicita el estado ni el cliente al usuario: se asignan/verifican en el backend.
 La consulta de compra es exclusivamente el soporte mínimo para completar HU-01.
-Hasta conectar Ventas, muestra el error 503 y mantiene el registro bloqueado.
+El identificador ingresado corresponde a `venta.id_venta`; las líneas corresponden
+a `detalle_pedido.id_detalle_ped`. El backend obtiene cliente y productos de las
+relaciones compartidas. Si las tablas o la BD no están disponibles, muestra un
+error 503 y mantiene el registro bloqueado; una venta inexistente produce 404.
 No hay datos ficticios, adjuntos, historial, KPIs ni tratamientos de casos en la interfaz.

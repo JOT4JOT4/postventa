@@ -1,3 +1,5 @@
+import { EntityManager } from 'typeorm';
+
 export enum RequestType {
   Complaint = 'Reclamo',
   Exchange = 'Cambio',
@@ -14,5 +16,5 @@ export interface Purchase {
 }
 
 export abstract class PurchaseGateway {
-  abstract findById(id: number): Promise<Purchase | null>;
+  abstract findById(id: number, manager?: EntityManager): Promise<Purchase | null>;
 }
