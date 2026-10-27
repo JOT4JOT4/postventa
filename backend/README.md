@@ -2,6 +2,7 @@
 
 Aplicación NestJS. HU-01 incorpora únicamente el registro de solicitudes. No incorpora
 autenticación, seguimiento, evaluación ni operaciones de inventario o finanzas.
+HU-12 agrega el listado de casos `GET /postventa/solicitudes` en `src/cases/`.
 
 ## Archivos y ejecución
 
@@ -17,7 +18,8 @@ compartido aprobado. Luego ejecutar `docker compose up --build`. El arranque apl
 las migraciones pendientes; falla si faltan las tablas externas, sin crearlas. Fuera de Docker:
 `npm ci`, configurar `.env`, `npm run migration:run`, `npm run start:dev`.
 
-Verificación: `npm run build`, `npm run lint:check`, `npm run test:hu01`.
+Verificación: `npm run build`, `npm run lint:check`, `npm run test:hu01` y
+`npm test -- test/cases` (HU-04 y HU-12).
 El comando antiguo `npm run lint` modifica archivos; `lint:check` solo comprueba.
 
 La aplicación es para desarrollo local; la autenticación corresponde a HU-16 y

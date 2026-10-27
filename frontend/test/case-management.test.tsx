@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CaseManagement } from '../src/cases/CaseManagement';
 import { CaseDetail, CaseHistoryEntry } from '../src/cases/case-api';
@@ -186,6 +186,18 @@ describe('HU-04: vista de gestión de reclamos (CaseManagement)', () => {
     render(<CaseManagement caseId={999} />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent('El caso indicado no existe.');
+  });
+
+  it('no inventa un tipo cuando el caso no lo tiene registrado (HU-12)', async () => {
+    fetchMock
+      .mockResolvedValueOnce(response({ ...mockCase, type: null }))
+      .mockResolvedValueOnce(response(mockHistory));
+
+    render(<CaseManagement caseId={101} />);
+    await screen.findByRole('heading', { level: 1, name: 'Caso #101' });
+
+    expect(screen.getByText('Sin tipo registrado')).toBeInTheDocument();
+    expect(screen.queryByText('Reclamo')).not.toBeInTheDocument();
   });
 
   it('ejecuta onBack al presionar el botón de volver', async () => {

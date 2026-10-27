@@ -16,6 +16,12 @@ No crea maestros ajenos ni incorpora compras ficticias en la aplicación.
 El tipo y los productos seleccionados se conservan en dos tablas auxiliares propias
 de Postventa porque el diagrama no representa esos datos obligatorios de HU-01.
 
+HU-12 agrega la consulta de casos: `GET /postventa/solicitudes` lista cada caso de
+RECLAMO con su identificador, tipo, estado, fecha de registro, compra y cliente,
+leídos de PostgreSQL. El detalle reutiliza `GET /postventa/solicitudes/:id` (HU-04).
+En la interfaz, `#/casos` muestra el listado y `#/casos/:id` el detalle; la página
+de inicio sigue siendo el formulario de registro. Sin paginación.
+
 ## Inicio con Docker (recomendado)
 
 1. Copiar `.env.example` a `.env` en la raíz y definir `POSTGRES_PASSWORD`.
@@ -69,6 +75,8 @@ npm run lint
 ```
 
 Para HU-01: `npm run test:hu01 --prefix backend` y `npm test --prefix frontend`.
+Para HU-04 y HU-12: `npm test --prefix backend -- test/cases`. Las suites de BD
+requieren `POSTVENTA_TEST_DATABASE_URL` (ver `backend/test/requests/README.md`).
 Comprobación sin modificar el backend: `npm run lint:check --prefix backend`.
 El script original de lint del backend contiene `--fix` y puede modificar archivos.
 
@@ -81,13 +89,14 @@ la BD acordada y ejecutar `npm run migration:run --prefix backend` antes de arra
 ## Organización y alcance
 
 - `backend/`: API, servicio transaccional, entidades, migración y pruebas.
-- `frontend/`: formulario de registro y pruebas de interacción.
+- `frontend/`: formulario de registro, listado y detalle de casos, navegación por hash y pruebas de interacción.
 - Cada carpeta modificada incluye documentación de sus archivos y conexiones.
 - Los `package.json`/`package-lock.json` de la raíz conservan los comandos globales.
 - `.env.example` documenta la contraseña local de Docker; `.gitignore` excluye valores locales y dependencias.
 
 La documentación técnica y los requisitos del adaptador están en
 `backend/src/requests/README.md`; el detalle de la migración está en
-`backend/src/database/migrations/README.md`.
-No se implementan consulta/seguimiento de casos, aprobaciones, historial, KPIs,
+`backend/src/database/migrations/README.md`. La consulta de casos (HU-12) se
+documenta en `backend/src/cases/README.md` y `frontend/src/cases/README.md`.
+No se implementan seguimiento de casos, aprobaciones, historial, KPIs,
 adjuntos, movimientos de inventario ni procesamiento de reembolsos.

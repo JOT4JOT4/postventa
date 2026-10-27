@@ -20,6 +20,39 @@ import { RequestRegistrationEntity } from '../requests/request-registration.enti
 export class CasesService {
   constructor(private readonly dataSource: DataSource) { }
 
+  /** Lista los casos registrados con su tipo y estado, del más reciente al más antiguo. */
+  async findAll() {
+    try {
+      const rows: {
+        id: number; type: string | null; status: string; createdAt: Date | null;
+        purchaseId: number; customerId: number;
+      }[] = await this.dataSource.manager
+        .createQueryBuilder(RequestEntity, 'r')
+        .leftJoin(RequestRegistrationEntity, 'reg', 'reg.requestId = r.id')
+        .select('r.id', 'id')
+        .addSelect('reg.type', 'type')
+        .addSelect('r.status', 'status')
+        .addSelect('reg.createdAt', 'createdAt')
+        .addSelect('r.purchaseId', 'purchaseId')
+        .addSelect('r.customerId', 'customerId')
+        .orderBy('reg.createdAt', 'DESC', 'NULLS LAST')
+        .addOrderBy('r.id', 'DESC')
+        .getRawMany();
+      return rows.map((row) => ({
+        id: row.id,
+        type: row.type ?? null,
+        status: row.status,
+        createdAt: row.createdAt ?? null,
+        purchaseId: row.purchaseId,
+        customerId: row.customerId,
+      }));
+    } catch {
+      throw new ServiceUnavailableException(
+        'No fue posible consultar los casos. Inténtalo nuevamente más tarde.',
+      );
+    }
+  }
+
   /** Carga el detalle completo de un caso  */
   async findById(id: number) {
     try {

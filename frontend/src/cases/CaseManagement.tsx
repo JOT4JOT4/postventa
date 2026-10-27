@@ -130,7 +130,7 @@ export function CaseManagement({ caseId, onBack }: CaseManagementProps) {
                 <div className="info-item">
                   <span className="info-label">Tipo de solicitud</span>
                   <span className="info-value readonly-tag" title="Lectura - HU-03 fuera del alcance">
-                    {caseDetail.type ?? 'Reclamo'}
+                    {caseDetail.type ?? 'Sin tipo registrado'}
                   </span>
                   <small className="field-hint">Definido en el registro inicial</small>
                 </div>
