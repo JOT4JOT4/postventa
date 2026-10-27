@@ -1,6 +1,7 @@
 # Interfaz de Postventa
 
-`src/` contiene la aplicación React. `test/` verifica el registro sin servicios reales.
+`src/` contiene la aplicación React. `test/` verifica el registro, la gestión y la
+consulta de casos y la navegación, sin servicios reales.
 
 - `package.json` / `package-lock.json`: dependencias y scripts reproducibles.
 - `Dockerfile`: entorno local Vite con Node 24 y usuario sin privilegios.

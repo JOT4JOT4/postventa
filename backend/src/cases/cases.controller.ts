@@ -17,6 +17,11 @@ import { CasesService } from './cases.service';
 export class CasesController {
   constructor(private readonly cases: CasesService) {}
 
+  @Get()
+  findAll() {
+    return this.cases.findAll();
+  }
+
   @Get(':id')
   findOne(@Param('id', new ParseIntPipe({
     exceptionFactory: () => new BadRequestException('El identificador del caso debe ser un entero.'),

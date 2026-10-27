@@ -25,6 +25,15 @@ export interface CaseDetail {
   resolution: CaseResolution | null;
 }
 
+export interface CaseSummary {
+  id: number;
+  type: string | null;
+  status: CaseStatusValue;
+  createdAt: string | null;
+  purchaseId: number;
+  customerId: number;
+}
+
 export interface CaseHistoryEntry {
   previousStatus: string | null;
   newStatus: string;
@@ -58,6 +67,10 @@ async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {
       body.message ?? 'No fue posible completar la operación.');
   }
   return response.json() as Promise<T>;
+}
+
+export function listCases() {
+  return apiRequest<CaseSummary[]>('solicitudes');
 }
 
 export function getCase(id: number) {
