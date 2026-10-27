@@ -43,6 +43,8 @@
 .form-error, .form-success { margin: 0 2rem 1.5rem; padding: 1rem; border-radius: .3rem; line-height: 1.5; }
 .form-error { background: #fff1f1; border: 1px solid #e9b1b1; color: #8d2020; }
 .form-success { display: grid; gap: .4rem; background: #eff8f2; border: 1px solid #9dceb0; color: #205c39; }
+.case-link { display: inline-flex; align-items: center; color: #1a5695; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; font-size: .9rem; margin-top: .2rem; }
+.case-link:hover { color: #0f3c6d; }
 .form-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.4rem 2rem; border-top: 1px solid #e7eaf0; }
 .form-footer p { color: #657086; font-size: .8rem; }
 @media (max-width: 600px) {

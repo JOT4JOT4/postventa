@@ -3,7 +3,11 @@ import { PurchaseFields } from './PurchaseFields';
 import { useRegistration } from './use-registration';
 import './registration.css';
 
-export function RegistrationForm() {
+interface RegistrationFormProps {
+  onNavigateToCase?: (caseId: number) => void;
+}
+
+export function RegistrationForm({ onNavigateToCase }: RegistrationFormProps = {}) {
   const form = useRegistration();
   const locked = form.busy || Boolean(form.result);
   return (
@@ -45,6 +49,18 @@ export function RegistrationForm() {
           {form.result && <div role="status" className="form-success">
             <strong>Solicitud registrada: {form.result.id}</strong>
             <span>Estado: {form.result.status}. Compra: {form.result.purchaseId}.</span>
+            <a
+              href={`?caseId=${form.result.id}`}
+              className="case-link"
+              onClick={(event) => {
+                if (onNavigateToCase) {
+                  event.preventDefault();
+                  onNavigateToCase(form.result!.id);
+                }
+              }}
+            >
+              Ver caso #{form.result.id} →
+            </a>
           </div>}
           <footer className="form-footer">
             <p>Los campos de la solicitud son obligatorios.</p>
