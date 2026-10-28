@@ -87,6 +87,12 @@ export class CasesService {
         const newStatus = dto.status;
         const statusChanged = currentStatus !== newStatus;
 
+        if(TERMINAL_STATUSES.includes(currentStatus)) {
+          throw new BadRequestException(
+            'El caso esta en un estado "${currentStatus}" y no permite modificaciones.',
+          );
+        }
+
         if (statusChanged) {
           const allowed = STATUS_TRANSITIONS[currentStatus];
           if (!allowed) {
