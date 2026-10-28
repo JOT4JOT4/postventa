@@ -3,7 +3,9 @@ import {
 } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { CreateRequestDto } from './create-request.dto';
+import { RequestItemEntity } from './request-item.entity';
 import { RequestEntity } from './request.entity';
+import { RequestRegistrationEntity } from './request-registration.entity';
 import { INITIAL_STATUS, PurchaseGateway } from './request.types';
 
 @Injectable()
@@ -39,7 +41,12 @@ export class RequestsService {
           reason: input.reason,
           status: INITIAL_STATUS,
         }));
-        return { ...request, type: input.type, createdAt: null,
+        const registration = await manager.save(RequestRegistrationEntity,
+          manager.create(RequestRegistrationEntity, { requestId: request.id, type: input.type }));
+        await manager.save(RequestItemEntity, input.purchaseItemIds.map((purchaseItemId) =>
+          manager.create(RequestItemEntity, { requestId: request.id, purchaseItemId }),
+        ));
+        return { ...request, type: registration.type, createdAt: registration.createdAt,
           purchaseItemIds: input.purchaseItemIds };
       });
     } catch (error) {

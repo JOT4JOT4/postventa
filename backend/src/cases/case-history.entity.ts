@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { RequestEntity } from '../requests/request.entity';
 
-@Entity('postventa_historial')
+@Entity({ name: 'historial', schema: 'postventa' })
 export class CaseHistoryEntity {
   @PrimaryGeneratedColumn('identity', { name: 'id_historial' })
   id!: number;

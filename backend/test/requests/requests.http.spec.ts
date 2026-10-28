@@ -57,7 +57,7 @@ describe('HU-01: contrato HTTP de registro', () => {
       reason: 'Faltan piezas.', type, status: 'Abierto',
     });
     expect(response.body.id).toBeGreaterThan(0);
-    expect(manager.save).toHaveBeenCalledTimes(1);
+    expect(manager.save).toHaveBeenCalledTimes(3);
   });
 
   it('asigna identificadores diferentes', async () => {

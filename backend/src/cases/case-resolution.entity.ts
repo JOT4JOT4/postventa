@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { RequestEntity } from '../requests/request.entity';
 
-@Entity('postventa_resolucion')
+@Entity({ name: 'resolucion', schema: 'postventa' })
 export class CaseResolutionEntity {
   @PrimaryColumn({ name: 'id_reclamo', type: 'integer' })
   caseId!: number;
