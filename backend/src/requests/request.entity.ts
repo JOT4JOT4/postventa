@@ -1,9 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { INITIAL_STATUS } from './request.types';
 
-@Entity('reclamo')
+@Entity({ name: 'reclamo', schema: 'postventa' })
 export class RequestEntity {
-  @PrimaryGeneratedColumn('identity', { name: 'id_reclamo' })
+  @PrimaryColumn({ name: 'id_reclamo', type: 'integer' })
   id!: number;
 
   @Column({ name: 'id_venta', type: 'integer' })
@@ -18,6 +18,5 @@ export class RequestEntity {
   @Column({ name: 'estado', type: 'varchar', length: 20, default: INITIAL_STATUS })
   status!: string;
 
-  @Column({ name: 'descripcion', type: 'varchar', length: 4000, nullable: true })
   description!: string | null;
 }

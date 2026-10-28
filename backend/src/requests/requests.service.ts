@@ -3,9 +3,7 @@ import {
 } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { CreateRequestDto } from './create-request.dto';
-import { RequestItemEntity } from './request-item.entity';
 import { RequestEntity } from './request.entity';
-import { RequestRegistrationEntity } from './request-registration.entity';
 import { INITIAL_STATUS, PurchaseGateway } from './request.types';
 
 @Injectable()
@@ -28,18 +26,20 @@ export class RequestsService {
         if (input.purchaseItemIds.some((id) => !purchase.items.some((item) => item.id === id))) {
           throw new BadRequestException('Los productos seleccionados no pertenecen a la compra.');
         }
+        await manager.query(
+          "SELECT pg_advisory_xact_lock(hashtext('postventa.reclamo.id'))",
+        );
+        const [nextId] = await manager.query(
+          'SELECT COALESCE(MAX(id_reclamo), 0) + 1 AS "nextId" FROM postventa.reclamo',
+        );
         const request = await manager.save(RequestEntity, manager.create(RequestEntity, {
+          id: Number(nextId.nextId),
           purchaseId: purchase.id,
           customerId: purchase.customer.id,
           reason: input.reason,
           status: INITIAL_STATUS,
         }));
-        const registration = await manager.save(RequestRegistrationEntity,
-          manager.create(RequestRegistrationEntity, { requestId: request.id, type: input.type }));
-        await manager.save(RequestItemEntity, input.purchaseItemIds.map((purchaseItemId) =>
-          manager.create(RequestItemEntity, { requestId: request.id, purchaseItemId }),
-        ));
-        return { ...request, type: registration.type, createdAt: registration.createdAt,
+        return { ...request, type: input.type, createdAt: null,
           purchaseItemIds: input.purchaseItemIds };
       });
     } catch (error) {
