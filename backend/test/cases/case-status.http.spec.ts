@@ -1,0 +1,100 @@
+import { BadRequestException, INestApplication, ServiceUnavailableException, ValidationPipe } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import * as request from 'supertest';
+import { DataSource } from 'typeorm';
+import { CasesController } from '../../src/cases/cases.controller';
+import { CasesService } from '../../src/cases/cases.service';
+import { CaseStatus } from '../../src/cases/case.types';
+
+const BASE_CASE = {
+  id: 1, purchaseId: 10, customerId: 20, reason: 'Faltan piezas.',
+  description: null, status: 'Abierto', type: 'Reclamo',
+  createdAt: new Date().toISOString(), items: [30, 31], resolution: null,
+};
+
+describe('HU-05/HU-14: evaluación y estados HTTP', () => {
+  let app: INestApplication;
+  const service = {
+    findById: jest.fn(),
+    updateStatus: jest.fn(),
+    resolve: jest.fn(),
+    getHistory: jest.fn(),
+  };
+
+  beforeAll(async () => {
+    const module = await Test.createTestingModule({
+      controllers: [CasesController],
+      providers: [
+        { provide: CasesService, useValue: service },
+        { provide: DataSource, useValue: {} },
+      ],
+    }).compile();
+    app = module.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+    await app.init();
+  });
+
+  beforeEach(() => jest.clearAllMocks());
+  afterAll(async () => app.close());
+
+  // ── PATCH /:id/estado ───────────────────────────────────────
+  it('actualiza el estado correctamente', async () => {
+    const updated = { ...BASE_CASE, status: 'En revisión' };
+    service.updateStatus.mockResolvedValue(updated);
+    const res = await request(app.getHttpServer())
+      .patch('/postventa/solicitudes/1/estado')
+      .send({ status: 'En revisión', note: 'Iniciando revisión.' })
+      .expect(200);
+    expect(res.body.status).toBe('En revisión');
+  });
+
+  it('permite actualizar la descripción sin cambiar el estado', async () => {
+    service.updateStatus.mockResolvedValue({ ...BASE_CASE, description: 'Producto dañado.' });
+    const res = await request(app.getHttpServer())
+      .patch('/postventa/solicitudes/1/estado')
+      .send({ status: 'Abierto', description: 'Producto dañado.' })
+      .expect(200);
+    expect(res.body.description).toBe('Producto dañado.');
+  });
+
+  it.each([
+    { status: 'EstadoInválido' },
+    { status: null },
+    { status: 'Rechazado' },
+    { status: 'Rechazado', note: '   ' },
+    { status: 'Rechazado', note: null },
+    { status: 'Abierto', description: null },
+    {},
+    { status: 'Abierto', description: 'x'.repeat(4001) },
+    { status: 'Abierto', note: 'x'.repeat(2001) },
+  ])('rechaza entrada inválida %j', async (body) => {
+    await request(app.getHttpServer())
+      .patch('/postventa/solicitudes/1/estado')
+      .send(body)
+      .expect(400);
+    expect(service.updateStatus).not.toHaveBeenCalled();
+  });
+
+  it('rechaza una transición no permitida', async () => {
+    service.updateStatus.mockRejectedValue(
+      new BadRequestException('No se puede cambiar de "Abierto" a "Cerrado".'),
+    );
+    await request(app.getHttpServer())
+      .patch('/postventa/solicitudes/1/estado')
+      .send({ status: 'Cerrado' })
+      .expect(400);
+  });
+
+  it('responde 503 si la BD no está disponible al actualizar estado', async () => {
+    service.updateStatus.mockRejectedValue(
+      new ServiceUnavailableException('No fue posible actualizar el caso.'),
+    );
+    const res = await request(app.getHttpServer())
+      .patch('/postventa/solicitudes/1/estado')
+      .send({ status: CaseStatus.InReview })
+      .expect(503);
+    expect(JSON.stringify(res.body)).not.toContain('stack');
+  });
+
+
+});

@@ -1,3 +1,4 @@
+import { CaseHistoryEntity } from '../../src/cases/case-history.entity';
 import { DataSource } from 'typeorm';
 import { RequestEntity } from '../../src/requests/request.entity';
 import { RequestItemEntity } from '../../src/requests/request-item.entity';
@@ -33,6 +34,9 @@ databaseSuite('HU-01: persistencia PostgreSQL en esquema aislado', () => {
     const metadata = await db.getRepository(RequestRegistrationEntity).findOneByOrFail({ requestId: saved.id });
     expect(metadata.createdAt).toBeInstanceOf(Date);
     expect(metadata.type).toBe('Reclamo');
+    expect(await db.getRepository(CaseHistoryEntity).findBy({ caseId: saved.id })).toEqual([
+      expect.objectContaining({ previousStatus: null, newStatus: 'Abierto', note: 'Registro inicial de solicitud' }),
+    ]);
   });
 
   it('genera IDs únicos con registros concurrentes', async () => {
@@ -42,7 +46,9 @@ databaseSuite('HU-01: persistencia PostgreSQL en esquema aislado', () => {
 
   it('revierte la cabecera si una línea no puede guardarse', async () => {
     const before = await db.getRepository(RequestEntity).count();
+    const historyBefore = await db.getRepository(CaseHistoryEntity).count();
     await expect(service.create({ ...input, purchaseItemIds: [30, 30] })).rejects.toThrow();
+    expect(await db.getRepository(CaseHistoryEntity).count()).toBe(historyBefore);
     expect(await db.getRepository(RequestEntity).count()).toBe(before);
   });
 

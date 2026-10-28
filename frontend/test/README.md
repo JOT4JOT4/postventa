@@ -5,8 +5,10 @@
   selección de productos, POST correcto, confirmación de ID/estado, invalidación
   de datos al cambiar compra y fallos de red. Las compras son ficticias y `fetch`
   se reemplaza solo dentro de las pruebas.
-- `case-management.test.tsx`: vista de gestión de HU-04; incluye el tipo ausente
-  mostrado como "Sin tipo registrado".
+- `case-management.test.tsx`: consulta general, descripción y cambio de estado.
+- `case-resolution.test.tsx`: terminalidad, resolución única en pantalla, errores, tipo ausente y navegación de regreso.
+- `case-evaluation.test.tsx`: rechazo con motivo obligatorio, bloqueo de envío inválido y nota enviada al servidor y mostrada en el historial.
+- `case-fixtures.ts`: exporta caso/historial ficticios, `fetchMock` y `response(body, ok)` para reutilizar respuestas de API solo en las pruebas.
 - `case-list.test.tsx` (HU-12): listado con ID, tipo y estado obtenidos de `fetch`,
   tipo y fecha ausentes sin valores inventados, enlace al detalle, badges sin región
   viva, lista vacía, error con Reintentar y fallo de red.

@@ -1,3 +1,4 @@
+import { BackfillInitialHistory1793088000000 } from '../../src/database/migrations/1793088000000-BackfillInitialHistory';
 import { DataSource } from 'typeorm';
 import { RequestEntity } from '../../src/requests/request.entity';
 import { RequestItemEntity } from '../../src/requests/request-item.entity';
@@ -19,7 +20,7 @@ export async function openTestDatabase(prefix: string): Promise<DataSource> {
   const db = new DataSource({
     type: 'postgres', url, schema, synchronize: false,
     entities: [RequestEntity, RequestRegistrationEntity, RequestItemEntity, CaseResolutionEntity, CaseHistoryEntity],
-    migrations: [CreateRequests1792800000000, AlignRegistrationSchema1792886400000, AddCaseManagement1793000000000],
+    migrations: [CreateRequests1792800000000, AlignRegistrationSchema1792886400000, AddCaseManagement1793000000000, BackfillInitialHistory1793088000000],
     extra: { options: `-c search_path=${schema}` },
   });
   await db.initialize();

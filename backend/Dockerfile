@@ -4,6 +4,7 @@ COPY package*.json ./
 RUN npm ci --no-audit --no-fund
 COPY tsconfig*.json ./
 COPY src ./src
+COPY database ./database
 RUN npm run build
 USER node
 EXPOSE 3000

@@ -7,6 +7,7 @@ import { RequestItemEntity } from './request-item.entity';
 import { RequestEntity } from './request.entity';
 import { RequestRegistrationEntity } from './request-registration.entity';
 import { INITIAL_STATUS, PurchaseGateway } from './request.types';
+import { CaseHistoryEntity } from '../cases/case-history.entity';
 
 @Injectable()
 export class RequestsService {
@@ -36,6 +37,10 @@ export class RequestsService {
         }));
         const registration = await manager.save(RequestRegistrationEntity,
           manager.create(RequestRegistrationEntity, { requestId: request.id, type: input.type }));
+        await manager.save(CaseHistoryEntity, manager.create(CaseHistoryEntity, {
+          caseId: request.id, previousStatus: null, newStatus: INITIAL_STATUS,
+          note: 'Registro inicial de solicitud', changedAt: new Date(),
+        }));
         await manager.save(RequestItemEntity, input.purchaseItemIds.map((purchaseItemId) =>
           manager.create(RequestItemEntity, { requestId: request.id, purchaseItemId }),
         ));

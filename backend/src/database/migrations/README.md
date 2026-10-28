@@ -45,3 +45,7 @@ No ejecutar sobre una BD compartida sin coordinar la ventana de migración. La
 migración completa corre en una transacción y bloquea escrituras en RECLAMO durante
 la copia. Antes de ejecutarla conviene revisar respaldo y correspondencia de los
 IDs de casos antiguos con los de las tablas compartidas.
+
+## Recuperación de historial inicial
+
+`1793088000000-BackfillInitialHistory.ts` agrega una entrada inicial solo a casos que no la tengan. `up(runner)` usa fecha y estado inicial de registro cuando existe `postventa_registro`. En registros sin metadatos, conserva el estado conocido y señala que no existe fecha inicial disponible. No modifica estados, notas existentes ni resoluciones. `down()` requiere conciliación manual para no borrar trazabilidad.

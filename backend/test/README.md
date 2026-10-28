@@ -13,3 +13,6 @@
 Ejecutar `npm run test:hu01` y `npm test -- test/cases` desde backend. Las pruebas HTTP aisladas usan dobles;
 las suites de integración usan el adaptador real y tablas ficticias de prueba
 en PostgreSQL. No se conecta al ERP real del curso durante estas verificaciones.
+
+- `database/`: verificación de la carga de datos ficticios y protección del destino local.
+- `cases/README.md`: detalla las regresiones de evaluación, concurrencia y errores.
