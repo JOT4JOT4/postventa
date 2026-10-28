@@ -13,8 +13,15 @@ CREATE TABLE IF NOT EXISTS detalle_pedido (
   id_pedido integer NOT NULL REFERENCES pedido(id_pedido),
   id_producto integer NOT NULL REFERENCES inv_producto(id_producto)
 );
-INSERT INTO cliente VALUES (20, 'Cliente ficticio de prueba'), (21, 'Otro cliente ficticio') ON CONFLICT DO NOTHING;
-INSERT INTO pedido VALUES (100, 20), (101, 21), (102, 20) ON CONFLICT DO NOTHING;
-INSERT INTO venta VALUES (10, 100), (11, 101), (12, 102) ON CONFLICT DO NOTHING;
-INSERT INTO inv_producto VALUES (40, 'Set ficticio A'), (41, 'Set ficticio B') ON CONFLICT DO NOTHING;
-INSERT INTO detalle_pedido VALUES (30, 100, 40), (31, 100, 41), (32, 101, 40) ON CONFLICT DO NOTHING;
+-- Maestros mínimos ficticios para la demostración local; no representan datos reales.
+INSERT INTO cliente(id_cliente, nombre)
+SELECT 19+n, 'Cliente ficticio ' || n FROM generate_series(1,10) AS n ON CONFLICT DO NOTHING;
+INSERT INTO pedido(id_pedido, id_cliente)
+SELECT 99+n, 19+n FROM generate_series(1,10) AS n ON CONFLICT DO NOTHING;
+INSERT INTO venta(id_venta, id_pedido)
+SELECT 9+n, 99+n FROM generate_series(1,10) AS n ON CONFLICT DO NOTHING;
+INSERT INTO inv_producto(id_producto, nombre_set)
+SELECT 39+n, 'Set ficticio ' || n FROM generate_series(1,10) AS n ON CONFLICT DO NOTHING;
+INSERT INTO detalle_pedido(id_detalle_ped, id_pedido, id_producto)
+SELECT 29+n, 100+((n-1)/2), 40+((n-1)%10)
+FROM generate_series(1,20) AS n ON CONFLICT DO NOTHING;

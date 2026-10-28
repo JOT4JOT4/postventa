@@ -1,0 +1,115 @@
+
+/* Form inputs */
+.field-group {
+  margin-bottom: 1.25rem;
+}
+
+.field-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #202b44;
+  margin-bottom: 0.5rem;
+}
+
+.field-group textarea,
+.field-group select {
+  width: 100%;
+  border: 1px solid #aab3c2;
+  border-radius: 0.3rem;
+  padding: 0.75rem;
+  font: inherit;
+  color: #202b44;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field-group textarea:focus,
+.field-group select:focus {
+  outline: none;
+  border-color: #346ad3;
+  box-shadow: 0 0 0 3px rgba(52, 106, 211, 0.2);
+}
+
+.char-count {
+  text-align: right;
+  font-size: 0.78rem;
+  color: #657086;
+  margin: 0.35rem 0 0;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.terminal-status-notice {
+  background: #f5f7fb;
+  border-left: 4px solid #657086;
+  padding: 0.9rem 1.1rem;
+  border-radius: 0.25rem;
+}
+
+.terminal-status-notice p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #566176;
+}
+
+/* Resolución */
+.resolution-card.resolved {
+  background: #eff8f2;
+  border: 1px solid #9dceb0;
+  border-radius: 0.4rem;
+  padding: 1.25rem;
+}
+
+.resolution-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.resolution-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #205c39;
+}
+
+.resolution-header time {
+  font-size: 0.82rem;
+  color: #4b7a5e;
+}
+
+.resolution-text {
+  margin: 0;
+  color: #1a422a;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+}
+
+.resolution-locked-note {
+  color: #657086;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  background: #f8f9fb;
+  border: 1px dashed #c3cad6;
+  padding: 1rem;
+  border-radius: 0.3rem;
+  margin: 0;
+}
+
+/* Sidebar Historial */
+.case-history-sidebar {
+  background: white;
+  border: 1px solid #dce0e8;
+  border-radius: 0.65rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px #202b4405;
+}

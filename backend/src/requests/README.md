@@ -27,7 +27,7 @@ No representan la ejecución de un cambio, devolución o reembolso.
 | `request.entity.ts` | `RequestEntity`: los cinco campos de `reclamo`; su ID se genera en PostgreSQL. |
 | `request-registration.entity.ts` | `RequestRegistrationEntity`: tipo y fecha, vinculados uno a uno por `id_reclamo`. |
 | `request-item.entity.ts` | `RequestItemEntity`: selección de líneas en `postventa_registro_producto`, mediante `id_detalle_ped`, sin duplicar maestros. |
-| `requests.service.ts` | `purchaseContext(id, manager?)`: carga venta o devuelve 404. `create(dto)`: vuelve a verificar la compra dentro de una transacción, deriva cliente, valida pertenencia y guarda caso, metadatos y líneas. Retorna ID, tipo, fecha y estado. |
+| `requests.service.ts` | `purchaseContext(id, manager?)`: carga venta o devuelve 404. `create(dto)`: vuelve a verificar la compra dentro de una transacción, deriva cliente, valida pertenencia y guarda caso, metadatos, historial inicial y líneas en la misma transacción. Retorna ID, tipo, fecha y estado. |
 | `requests.controller.ts` | `RequestsController`: expone únicamente el contexto de compra y el registro. |
 | `requests.module.ts` | `RequestsModule`: registra entidades y conecta `PurchaseGateway` con el adaptador PostgreSQL. |
 
@@ -37,7 +37,7 @@ No representan la ejecución de un cambio, devolución o reembolso.
 - `POST /postventa/solicitudes`: cuerpo
   `{"purchaseId":10,"purchaseItemIds":[30],"type":"Reclamo","reason":"Faltan piezas."}`.
   `purchaseId` representa `id_venta`; `purchaseItemIds` contiene `id_detalle_ped`.
-  Los números del ejemplo son ficticios; no se cargan en la aplicación.
+  Los números del ejemplo corresponden al entorno ficticio de demostración local.
 - Respuesta 201: `id` (id_reclamo), `purchaseId`, `customerId`, `purchaseItemIds`,
   `type`, `reason`, `status`, `createdAt`. El contrato del frontend se conserva.
 - 400: datos inválidos o productos ajenos; 404: venta ausente;

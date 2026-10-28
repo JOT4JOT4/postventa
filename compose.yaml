@@ -23,7 +23,10 @@ services:
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en el archivo .env}
       FRONTEND_ORIGIN: http://localhost:${POSTVENTA_WEB_PORT:-5173}
       PORT: 3000
-    command: ["sh", "-c", "node node_modules/typeorm/cli.js migration:run -d dist/database/data-source.js && node dist/main.js"]
+      POSTVENTA_DEMO_DATA: "true"
+    volumes:
+      - ./shared-schema.sql:/shared-schema.sql:ro
+    command: ["sh", "-c", "node dist/database/demo-runner.js prepare && node node_modules/typeorm/cli.js migration:run -d dist/database/data-source.js && node dist/database/demo-runner.js seed && node dist/main.js"]
     ports:
       - "127.0.0.1:${POSTVENTA_API_PORT:-3001}:3000"
     depends_on:

@@ -1,0 +1,115 @@
+/* Layout y contenedor principal */
+.case-management-layout {
+  max-width: 1140px;
+  margin: auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.case-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.back-button {
+  background: transparent;
+  border: none;
+  color: #566176;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.3rem;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.back-button:hover {
+  color: #202b44;
+  background: #e7eaf0;
+}
+
+.breadcrumb {
+  font-size: 0.72rem;
+  color: #657086;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+/* Cabecera del caso */
+.case-header {
+  margin-bottom: 1.75rem;
+}
+
+.case-header-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.case-header-main h1 {
+  font-size: clamp(1.8rem, 4vw, 2.3rem);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  margin: 0;
+  color: #202b44;
+}
+
+.case-meta {
+  margin-top: 0.5rem;
+  color: #566176;
+  font-size: 0.9rem;
+}
+
+.case-meta strong {
+  color: #202b44;
+}
+
+/* Badges de Estado */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 650;
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.status-badge.status-large {
+  padding: 0.35rem 0.95rem;
+  font-size: 0.95rem;
+}
+
+.status-abierto {
+  background: #fff0cb;
+  color: #795400;
+  border-color: #f3df9b;
+}
+
+.status-en-revisión {
+  background: #e6f0fa;
+  color: #1a5695;
+  border-color: #b8d4f1;
+}
+
+.status-aprobado {
+  background: #eff8f2;
+  color: #205c39;
+  border-color: #9dceb0;
+}
+
+.status-rechazado {
+  background: #fff1f1;
+  color: #8d2020;
+  border-color: #e9b1b1;
+}
+
+.status-cerrado {
+  background: #e7eaf0;
+  color: #3f4a5c;
+  border-color: #c6cbd6;
+}

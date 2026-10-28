@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   CaseDetail,
   CaseHistoryEntry,
@@ -13,6 +13,7 @@ export function useCaseManagement(caseId: number) {
   const [caseDetail, setCaseDetail] = useState<CaseDetail | null>(null);
   const [history, setHistory] = useState<CaseHistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const inFlight = useRef(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -49,7 +50,12 @@ export function useCaseManagement(caseId: number) {
   }, [loadCase]);
 
   const saveStatusAndDetails = async () => {
-    if (!caseDetail) return;
+    if (!caseDetail || inFlight.current) return;
+    if (selectedStatus === 'Rechazado' && !statusNote.trim()) {
+      setError('Debes ingresar el motivo del rechazo.');
+      return;
+    }
+    inFlight.current = true;
     setBusy(true);
     setError(null);
     setSuccessMessage(null);
@@ -68,12 +74,14 @@ export function useCaseManagement(caseId: number) {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al actualizar el estado.');
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   };
 
   const registerResolution = async () => {
-    if (!caseDetail || !resolutionText.trim()) return;
+    if (!caseDetail || !resolutionText.trim() || inFlight.current) return;
+    inFlight.current = true;
     setBusy(true);
     setError(null);
     setSuccessMessage(null);
@@ -94,6 +102,7 @@ export function useCaseManagement(caseId: number) {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al registrar la resolución.');
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   };

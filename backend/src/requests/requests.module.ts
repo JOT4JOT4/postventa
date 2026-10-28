@@ -1,3 +1,4 @@
+import { CaseHistoryEntity } from '../cases/case-history.entity';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabasePurchaseGateway } from './database-purchase.gateway';
@@ -9,7 +10,7 @@ import { RequestsController } from './requests.controller';
 import { RequestsService } from './requests.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([RequestEntity, RequestRegistrationEntity, RequestItemEntity])],
+  imports: [TypeOrmModule.forFeature([CaseHistoryEntity, RequestEntity, RequestRegistrationEntity, RequestItemEntity])],
   controllers: [RequestsController],
   providers: [RequestsService, { provide: PurchaseGateway, useClass: DatabasePurchaseGateway }],
 })

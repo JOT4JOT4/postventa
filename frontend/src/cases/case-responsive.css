@@ -1,0 +1,10 @@
+
+/* Responsividad */
+@media (max-width: 860px) {
+  .case-grid {
+    grid-template-columns: 1fr;
+  }
+  .case-card {
+    padding: 1.3rem;
+  }
+}
