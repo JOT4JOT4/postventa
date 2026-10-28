@@ -20,6 +20,9 @@ import { RequestsModule } from './requests/requests.module';
         database: config.getOrThrow<string>('DATABASE_NAME'),
         username: config.getOrThrow<string>('DATABASE_USER'),
         password: config.getOrThrow<string>('DATABASE_PASSWORD'),
+        ssl: {
+          rejectUnauthorized: false,
+        },
         autoLoadEntities: true,
         synchronize: false,
       }),
