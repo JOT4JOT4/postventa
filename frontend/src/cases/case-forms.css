@@ -8,18 +8,18 @@
   display: block;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #202b44;
+  color: var(--text-main);
   margin-bottom: 0.5rem;
 }
 
 .field-group textarea,
 .field-group select {
   width: 100%;
-  border: 1px solid #aab3c2;
-  border-radius: 0.3rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-control);
   padding: 0.75rem;
   font: inherit;
-  color: #202b44;
+  color: var(--text-main);
   background: #fff;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -27,14 +27,14 @@
 .field-group textarea:focus,
 .field-group select:focus {
   outline: none;
-  border-color: #346ad3;
-  box-shadow: 0 0 0 3px rgba(52, 106, 211, 0.2);
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px rgb(31 95 174 / 15%);
 }
 
 .char-count {
   text-align: right;
   font-size: 0.78rem;
-  color: #657086;
+  color: var(--text-muted);
   margin: 0.35rem 0 0;
 }
 
@@ -45,23 +45,23 @@
 }
 
 .terminal-status-notice {
-  background: #f5f7fb;
-  border-left: 4px solid #657086;
+  background: var(--surface-subtle);
+  border-left: 4px solid var(--text-muted);
   padding: 0.9rem 1.1rem;
-  border-radius: 0.25rem;
+  border-radius: 8px;
 }
 
 .terminal-status-notice p {
   margin: 0;
   font-size: 0.88rem;
-  color: #566176;
+  color: var(--text-body);
 }
 
 /* Resolución */
 .resolution-card.resolved {
   background: #eff8f2;
   border: 1px solid #9dceb0;
-  border-radius: 0.4rem;
+  border-radius: var(--radius-control);
   padding: 1.25rem;
 }
 
@@ -95,21 +95,21 @@
 }
 
 .resolution-locked-note {
-  color: #657086;
+  color: var(--text-muted);
   font-size: 0.88rem;
   line-height: 1.5;
-  background: #f8f9fb;
-  border: 1px dashed #c3cad6;
+  background: var(--surface-subtle);
+  border: 1px dashed var(--border-strong);
   padding: 1rem;
-  border-radius: 0.3rem;
+  border-radius: var(--radius-control);
   margin: 0;
 }
 
 /* Sidebar Historial */
 .case-history-sidebar {
-  background: white;
-  border: 1px solid #dce0e8;
-  border-radius: 0.65rem;
+  background: var(--surface-panel);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
   padding: 1.5rem;
-  box-shadow: 0 4px 20px #202b4405;
+  box-shadow: var(--shadow-md);
 }

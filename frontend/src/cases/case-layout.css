@@ -1,8 +1,8 @@
 /* Layout y contenedor principal */
 .case-management-layout {
-  max-width: 1140px;
+  max-width: 1280px;
   margin: auto;
-  padding: 2rem 1.5rem 4rem;
+  padding: 2.75rem 2rem 4rem;
 }
 
 .case-top-bar {
@@ -15,24 +15,24 @@
 .back-button {
   background: transparent;
   border: none;
-  color: #566176;
+  color: var(--text-body);
   font: inherit;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   padding: 0.4rem 0.6rem;
-  border-radius: 0.3rem;
+  border-radius: var(--radius-control);
   transition: color 0.15s ease, background 0.15s ease;
 }
 
 .back-button:hover {
-  color: #202b44;
-  background: #e7eaf0;
+  color: var(--text-main);
+  background: var(--border-light);
 }
 
 .breadcrumb {
   font-size: 0.72rem;
-  color: #657086;
+  color: var(--text-muted);
   font-weight: 700;
   letter-spacing: 0.1em;
 }
@@ -50,21 +50,22 @@
 }
 
 .case-header-main h1 {
+  font-family: var(--font-brand);
   font-size: clamp(1.8rem, 4vw, 2.3rem);
-  font-weight: 750;
+  font-weight: 600;
   letter-spacing: -0.035em;
   margin: 0;
-  color: #202b44;
+  color: var(--text-main);
 }
 
 .case-meta {
   margin-top: 0.5rem;
-  color: #566176;
+  color: var(--text-body);
   font-size: 0.9rem;
 }
 
 .case-meta strong {
-  color: #202b44;
+  color: var(--text-main);
 }
 
 /* Badges de Estado */
@@ -104,12 +105,12 @@
 
 .status-rechazado {
   background: #fff1f1;
-  color: #8d2020;
+  color: var(--danger);
   border-color: #e9b1b1;
 }
 
 .status-cerrado {
-  background: #e7eaf0;
-  color: #3f4a5c;
+  background: var(--border-light);
+  color: var(--text-body);
   border-color: #c6cbd6;
 }

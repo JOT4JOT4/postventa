@@ -22,3 +22,5 @@ Ejecutar `npm test` desde frontend. No necesita un backend ni una base de datos.
 
 - `returns.test.tsx`: formulario HU-06; envío de línea/cantidad/fecha/motivo, aprobación, consulta posterior, cantidad inválida/excesiva, motivo vacío, falta de unidades, duplicados y conexión.
 - `return-validation.test.ts`: fechas calendario válidas/inválidas, años bisiestos y valor inicial con día local.
+
+- `module-header.test.tsx`: verifica marca con destino al inicio, enlaces existentes, sección activa/inactiva y salto al contenido con teclado sin alterar la ruta por hash. Complementa las pruebas de navegación de la aplicación.

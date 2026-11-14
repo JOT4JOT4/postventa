@@ -11,9 +11,7 @@ export function RegistrationForm({ onNavigateToCase }: RegistrationFormProps = {
   const form = useRegistration();
   const locked = form.busy || Boolean(form.result);
   return (
-    <main className="postventa-page">
-      <header className="module-header"><strong>mini-ERP <span>/</span> Postventa</strong>
-        <span className="module-label">Registro de solicitudes</span></header>
+    <main id="main-content" tabIndex={-1} className="postventa-page">
       <div className="registration-layout">
         <header className="page-intro">
           <p className="eyebrow">POSTVENTA / NUEVA SOLICITUD</p>

@@ -13,11 +13,7 @@ export function CaseList() {
   const { cases, loading, error, reload } = useCaseList();
 
   return (
-    <main className="postventa-page">
-      <header className="module-header">
-        <strong>mini-ERP <span>/</span> Postventa</strong>
-        <span className="module-label">Consulta de casos</span>
-      </header>
+    <main id="main-content" tabIndex={-1} className="postventa-page">
 
       <div className="case-management-layout" aria-busy={loading}>
         <header className="case-list-intro">

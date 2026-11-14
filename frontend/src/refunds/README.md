@@ -12,3 +12,5 @@ Se integra como una sección del detalle de caso existente, conservando sus esti
 No hay botones para aprobar, ejecutar, pagar ni cambiar el estado del reembolso. Una respuesta de duplicado se muestra y puede actualizarse la consulta. La solicitud existente sigue consultable aunque el caso haya alcanzado otro estado.
 
 La API identifica compra y cliente desde el caso; no existen campos para sobrescribirlos. `CaseManagement` monta esta sección dentro del detalle. Las pruebas de `frontend/test/refunds.test.tsx` cubren registro, consulta, estados, validación, conflictos y reintentos.
+
+Los colores, radios y foco de `refund.css` usan los tokens LesGo. Los botones reutilizan `../styles/controls.css`; se conserva el comportamiento del registro y consulta.

@@ -16,3 +16,5 @@ a `detalle_pedido.id_detalle_ped`. El backend obtiene cliente y productos de las
 relaciones compartidas. Si las tablas o la BD no están disponibles, muestra un
 error 503 y mantiene el registro bloqueado; una venta inexistente produce 404.
 No hay datos ficticios, adjuntos, historial, KPIs ni tratamientos de casos en la interfaz.
+
+La vista de registro conserva su formulario y comportamiento. Usa los tokens LesGo y paneles grises con secciones blancas en `registration.css`; la cabecera se monta una sola vez desde `App`. El elemento principal expone `main-content` para el acceso por teclado.

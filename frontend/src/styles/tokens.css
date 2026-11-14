@@ -1,0 +1,28 @@
+:root {
+  --lego-red: #e52521;
+  --lego-red-hover: #cc1f1c;
+  --lego-red-soft: #fef2f2;
+  --lego-yellow: #ffd500;
+  --dark-red-btn: #881337;
+  --dark-red-btn-hover: #70102e;
+  --bg-page: #f8fafc;
+  --surface-card: #fff;
+  --surface-subtle: #f1f5f9;
+  --surface-panel: #e9edf2;
+  --surface-muted: #e2e8f0;
+  --text-main: #0f172a;
+  --text-body: #334155;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+  --border-strong: #94a3b8;
+  --focus: #1f5fae;
+  --danger: #991b1b;
+  --success: #166534;
+  --radius-panel: 24px;
+  --radius-card: 18px;
+  --radius-control: 12px;
+  --shadow-sm: 0 1px 3px rgb(15 23 42 / 4%);
+  --shadow-md: 0 4px 16px -2px rgb(15 23 42 / 6%);
+  --font-brand: 'Fredoka', ui-rounded, system-ui, sans-serif;
+  --font-ui: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}

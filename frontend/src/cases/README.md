@@ -42,3 +42,5 @@ Todos los componentes devuelven elementos React; sus datos provienen de los cont
 `CaseManagement` también monta `RefundSection` de `../refunds/` con el ID y estado del caso. La sección consulta solo a petición del usuario y no modifica el flujo existente de evaluación, estados o resolución.
 
 `CaseManagement` monta también `ReturnSection` desde `../returns/`, pasando ID y estado del caso. El registro/consulta de la devolución tiene estado y validaciones propios, sin modificar las acciones de gestión del caso.
+
+Listado y detalle consumen la paleta y controles de `../styles/`. Las hojas `case-*.css` mantienen disposición, tarjetas, tabla, historial y estados con paneles claros y bordes redondeados. Cada variante de carga/error/contenido mantiene el destino `main-content`; la cabecera visual se centraliza en `App` mediante `ModuleHeader`.

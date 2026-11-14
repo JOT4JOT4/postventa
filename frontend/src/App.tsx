@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { CaseList } from './cases/CaseList';
 import { CaseManagement } from './cases/CaseManagement';
 import { RegistrationForm } from './requests/RegistrationForm';
+import { ModuleHeader } from './layout/ModuleHeader';
 
 type Route =
   | { name: 'registration' }
@@ -52,23 +53,9 @@ function App() {
   }, []);
 
   const section = route.name === 'registration' ? 'registration' : route.name === 'not-found' ? null : 'cases';
-  const linkClass = (active: boolean) =>
-    `rounded px-3 py-1.5 font-semibold text-[#d8deea] hover:bg-white/10 hover:text-white ` +
-    `focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8fb3f5] ` +
-    (active ? 'bg-white/15 text-white' : '');
-
   return (
-    <>
-      <nav aria-label="Secciones de Postventa" className="flex flex-wrap gap-2 bg-[#16203a] px-[5vw] py-2 text-sm">
-        <a href="#/" className={linkClass(section === 'registration')}
-          aria-current={section === 'registration' ? 'page' : undefined}>
-          Registrar solicitud
-        </a>
-        <a href="#/casos" className={linkClass(section === 'cases')}
-          aria-current={section === 'cases' ? 'page' : undefined}>
-          Casos
-        </a>
-      </nav>
+    <div className="app-shell">
+      <ModuleHeader activeSection={section} />
       {route.name === 'registration' && (
         <RegistrationForm onNavigateToCase={(id) => navigate(`#/casos/${id}`)} />
       )}
@@ -77,18 +64,15 @@ function App() {
         <CaseManagement key={route.id} caseId={route.id} onBack={() => navigate('#/casos')} />
       )}
       {route.name === 'not-found' && (
-        <main className="postventa-page">
-          <header className="module-header">
-            <strong>mini-ERP <span>/</span> Postventa</strong>
-          </header>
-          <div className="mx-auto max-w-xl px-6 py-12 text-center">
-            <h1 className="mb-3 text-2xl font-bold">Página no encontrada</h1>
-            <p className="mb-6 text-[#566176]">La dirección indicada no corresponde a ninguna sección ni caso válido.</p>
+        <main id="main-content" tabIndex={-1} className="postventa-page">
+          <div className="not-found-page">
+            <h1>Página no encontrada</h1>
+            <p>La dirección indicada no corresponde a ninguna sección ni caso válido.</p>
             <a href="#/casos" className="case-link">Ir a la lista de casos →</a>
           </div>
         </main>
       )}
-    </>
+    </div>
   );
 }
 

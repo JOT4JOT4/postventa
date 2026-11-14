@@ -19,11 +19,7 @@ export function CaseManagement({ caseId, onBack }: CaseManagementProps) {
 
   if (loading) {
     return (
-      <main className="postventa-page">
-        <header className="module-header">
-          <strong>mini-ERP <span>/</span> Postventa</strong>
-          <span className="module-label">Gestión de reclamos</span>
-        </header>
+      <main id="main-content" tabIndex={-1} className="postventa-page">
         <div className="case-management-layout">
           <p className="loading-indicator">Cargando información del caso #{caseId}…</p>
         </div>
@@ -33,11 +29,7 @@ export function CaseManagement({ caseId, onBack }: CaseManagementProps) {
 
   if (error && !caseDetail) {
     return (
-      <main className="postventa-page">
-        <header className="module-header">
-          <strong>mini-ERP <span>/</span> Postventa</strong>
-          <span className="module-label">Gestión de reclamos</span>
-        </header>
+      <main id="main-content" tabIndex={-1} className="postventa-page">
         <div className="case-management-layout">
           <div className="error-panel" role="alert">
             <h2>Error al cargar el caso</h2>
@@ -62,11 +54,7 @@ export function CaseManagement({ caseId, onBack }: CaseManagementProps) {
 
 
   return (
-    <main className="postventa-page">
-      <header className="module-header">
-        <strong>mini-ERP <span>/</span> Postventa</strong>
-        <span className="module-label">Gestión de reclamos</span>
-      </header>
+    <main id="main-content" tabIndex={-1} className="postventa-page">
 
       <div className="case-management-layout">
         <div className="case-top-bar">
