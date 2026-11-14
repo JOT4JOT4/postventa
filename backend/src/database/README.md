@@ -27,3 +27,5 @@ externos y aplicar `npm run migration:run` desde backend. El modo de demostraci�
 
 - `demo-runner.ts`: `validateDemoTarget(environment)` restringe datos ficticios a hosts locales y nombres de base permitidos. `loadDemoData(db, mode)` recibe un `DataSource` conectado y `prepare` o `seed`, lee el SQL correspondiente y lo ejecuta dentro de una transacción con bloqueo asesor. Devuelve `Promise<void>` y propaga errores para revertir la carga. El ejecutable solo actúa con `POSTVENTA_DEMO_DATA=true`; no imprime credenciales.
 - `../../database/demo/cases.sql`: semilla local de casos y su trazabilidad; se ejecuta después de migrar. Ver documentación de esa carpeta.
+
+Para HU-06, `demo-runner.ts` procesa `cases.sql`, `refunds.sql` y `returns.sql`, en ese orden, durante `seed`. El modo `prepare` extiende únicamente el esquema ficticio local con cantidades de compra, sin sobrescribir valores existentes. La migración de devoluciones no modifica esa tabla externa.

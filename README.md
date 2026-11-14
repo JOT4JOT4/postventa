@@ -1,6 +1,6 @@
 # Módulo de Postventa
 
-Aplicación React y TypeScript con API NestJS, TypeORM y PostgreSQL. Implementa el registro y clasificación inicial de solicitudes, consulta de casos, gestión de reclamos, evaluación mediante estados, historial y resolución final. Incluye el MVP del Sprint 2 y el registro de solicitudes de reembolso HU-10.
+Aplicación React y TypeScript con API NestJS, TypeORM y PostgreSQL. Implementa el registro y clasificación inicial de solicitudes, consulta de casos, gestión de reclamos, evaluación mediante estados, historial y resolución final. Incluye el MVP del Sprint 2, el registro de solicitudes de reembolso HU-10 y el registro de devoluciones HU-06.
 
 El registro local consulta `venta → pedido → cliente` y `detalle_pedido → inv_producto`. Deriva el cliente desde la compra y verifica que los productos seleccionados pertenezcan a ella. Guarda el caso en `reclamo`, su tipo y fecha en `postventa_registro`, y sus productos en `postventa_registro_producto`. El historial inicial se guarda en la misma transacción. Los tipos son Reclamo, Cambio, Devolución y Reembolso; el estado inicial es Abierto.
 
@@ -27,14 +27,15 @@ La secuencia también se ejecuta con el volumen existente. **No es necesario eje
 | venta | 10 |
 | inv_producto | 10 |
 | detalle_pedido | 20 |
-| reclamo | 30 |
-| postventa_registro | 30 |
-| postventa_registro_producto | 30 |
-| postventa_historial | 79 |
+| reclamo | 40 |
+| postventa_registro | 40 |
+| postventa_registro_producto | 40 |
+| postventa_historial | 109 |
 | postventa_resolucion | 10 |
 | reembolso | 10 |
+| devolucion | 10 |
 
-Son datos ficticios identificados como tales. Los casos de demostración usan IDs `100001–100020`, los cuatro tipos y los cinco estados. Los primeros diez están cerrados y tienen resolución. HU-10 agrega diez casos aprobados 200001–200010 con solicitudes de reembolso ficticias. Los recuentos pueden aumentar con la utilización de los formularios. Los archivos históricos `peticion`/`detalle_peticion` y la tabla interna de migraciones quedan fuera del modelo funcional activo; se conservan sin duplicar registros.
+Son datos ficticios identificados como tales. Los casos de demostración usan IDs `100001–100020`, los cuatro tipos y los cinco estados. Los primeros diez están cerrados y tienen resolución. HU-10 agrega diez casos aprobados 200001–200010 con solicitudes de reembolso ficticias. HU-06 agrega diez casos aprobados 300001–300010 con devoluciones ficticias. Las líneas locales tienen cantidad ficticia 3; cada devolución de semilla contiene una unidad. Los recuentos pueden aumentar con la utilización de los formularios. Los archivos históricos `peticion`/`detalle_peticion` y la tabla interna de migraciones quedan fuera del modelo funcional activo; se conservan sin duplicar registros.
 
 `shared-schema.sql` es una representación mínima para la prueba local, no la implementación completa de Ventas, CRM ni Inventario. La conexión real del ERP requiere sus estructuras y configuración acordadas. La semilla está restringida a destinos locales y requiere `POSTVENTA_DEMO_DATA=true`; Docker activa ese modo de demostración explícitamente.
 
@@ -48,7 +49,7 @@ Son datos ficticios identificados como tales. Los casos de demostración usan ID
 - Escrituras: las operaciones sobre un mismo caso se serializan en PostgreSQL; los errores revierten la transacción.
 - HTTP: 400 ante datos o transiciones inválidos; 404 para referencias inexistentes; 409 si ya existe resolución; 503 ante indisponibilidad de persistencia. Los mensajes se muestran en español sin detalles internos del motor.
 
-El registro selecciona líneas compradas y no solicita cantidades de devolución/cambio. Por eso no se añade un campo para ejecutar operaciones que corresponden a otras historias. Se valida la cantidad de líneas seleccionadas (mínimo una, máximo cien, sin duplicados).
+El registro inicial del caso selecciona líneas compradas (mínimo una, máximo cien, sin duplicados). La cantidad y los antecedentes específicos de la devolución se ingresan después de aprobar el caso, mediante HU-06.
 
 ## Desarrollo y pruebas
 
@@ -71,11 +72,13 @@ Las pruebas de PostgreSQL requieren `POSTVENTA_TEST_DATABASE_URL` apuntando a un
 
 - `backend/src/requests/`: registro y adaptador de lectura de compras.
 - `backend/src/cases/`: consultas, reglas de evaluación, cambios de estado, historial y resolución.
+- `backend/src/returns/`: registro y consulta de devoluciones HU-06.
 - `backend/src/database/`: conexión y migraciones versionadas; ejecutor protegido de datos demo.
 - `backend/database/demo/`: SQL de casos ficticios.
 - `backend/test/`: pruebas HTTP, transaccionales, concurrencia y datos iniciales.
 - `frontend/src/requests/`: formulario de registro.
 - `frontend/src/cases/`: listado, detalle y formularios de gestión.
+- `frontend/src/returns/`: formulario y consulta de devoluciones HU-06.
 - `frontend/test/`: pruebas de interacción y navegación.
 - `compose.yaml`: entorno local reproducible; `backend/Dockerfile` incluye el ejecutor y SQL demo; el frontend conserva su entorno Vite.
 - `shared-schema.sql`: maestros mínimos ficticios, inserciones repetibles sin sobrescribir filas existentes.
@@ -86,7 +89,7 @@ Cada carpeta incluye documentación de sus archivos y conexiones.
 
 Se dispone de formulario de registro, listado de consulta y formularios de gestión conectados a la API. Para mostrar el flujo parcial: registrar un caso, abrirlo en Solicitudes, pasar a En revisión, aprobar o rechazar con motivo, consultar el historial y registrar la resolución en un estado terminal.
 
-La exposición del flujo en clase es una actividad del equipo; no se considera realizada por disponer del código. La integración remota con el ERP del curso debe validarse con los demás grupos. Autenticación/permisos, ejecución de devoluciones/cambios/reembolsos, indicadores y dashboards no se amplían como parte de esta corrección del Sprint 2.
+La exposición del flujo en clase es una actividad del equipo; no se considera realizada por disponer del código. La integración remota con el ERP del curso debe validarse con los demás grupos. Autenticación/permisos, recepción física y movimientos de stock, ejecución de cambios o pagos, indicadores y dashboards mantienen su alcance separado de HU-06 y HU-10.
 
 ## Pruebas reproducibles con Docker
 
@@ -124,3 +127,16 @@ API: GET/POST `/postventa/solicitudes/:id/reembolsos`, POST con `{"amount":"1500
 - `backend/database/demo/refunds.sql`: diez solicitudes ficticias y sus antecedentes.
 
 La nueva migración crea únicamente la tabla local de solicitudes. Las integraciones con Finanzas, autenticación, otras historias y el esquema compartido no se amplían como parte de HU-10.
+
+
+## Registro de devolución — HU-06
+
+En el detalle de un caso, abrir **Consultar devolución**. Si está Aprobado y no tiene devolución, seleccionar una línea asociada al caso, ingresar cantidad positiva, fecha y motivo, y registrar. Para una prueba manual se puede usar el caso ficticio aprobado **100013**; consultar los productos y sus unidades restantes antes de registrar. Los casos **300001–300010** permiten consultar devoluciones ya guardadas.
+
+Se permite una devolución de un producto por caso, conforme al diagrama ER. El producto se deriva de la línea original. La cantidad acumulada de devoluciones de esa línea, incluso desde casos distintos, no puede superar lo comprado. La fecha se guarda sin zona horaria y el motivo es obligatorio. La consulta sigue disponible tras cerrar el caso. Registrar no modifica el estado del caso, no ejecuta un reembolso ni actualiza stock.
+
+API GET/POST `/postventa/solicitudes/:id/devoluciones`. POST: `{"purchaseItemId":30,"quantity":1,"returnDate":"2026-11-14","reason":"Piezas faltantes"}`. GET devuelve `{returns, products}`; ver contratos, funciones y límites en `backend/src/returns/README.md` y `frontend/src/returns/README.md`.
+
+La nueva migración crea solo `devolucion` y debe aplicarse antes de usar la API. La fuente local de compras añade cantidades ficticias para probar la validación. No se migró la base oficial ni se implementaron contratos de recepción física, bodega o movimientos con Inventario/Logística.
+
+Pruebas específicas: `npm test --prefix backend -- --runInBand test/returns` y `npm test --prefix frontend -- --run test/returns.test.tsx test/return-validation.test.ts`. Las pruebas de base requieren el destino local exclusivo descrito anteriormente.

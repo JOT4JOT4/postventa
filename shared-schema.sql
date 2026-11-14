@@ -11,8 +11,11 @@ CREATE TABLE IF NOT EXISTS inv_producto (id_producto integer PRIMARY KEY, nombre
 CREATE TABLE IF NOT EXISTS detalle_pedido (
   id_detalle_ped integer PRIMARY KEY,
   id_pedido integer NOT NULL REFERENCES pedido(id_pedido),
-  id_producto integer NOT NULL REFERENCES inv_producto(id_producto)
+  id_producto integer NOT NULL REFERENCES inv_producto(id_producto),
+  cantidad integer NOT NULL DEFAULT 3 CHECK (cantidad > 0)
 );
+-- Extiende únicamente el esquema ficticio local en volúmenes de demostración existentes.
+ALTER TABLE detalle_pedido ADD COLUMN IF NOT EXISTS cantidad integer NOT NULL DEFAULT 3 CHECK (cantidad > 0);
 -- Maestros mínimos ficticios para la demostración local; no representan datos reales.
 INSERT INTO cliente(id_cliente, nombre)
 SELECT 19+n, 'Cliente ficticio ' || n FROM generate_series(1,10) AS n ON CONFLICT DO NOTHING;

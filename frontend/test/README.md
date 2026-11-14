@@ -19,3 +19,6 @@
 Ejecutar `npm test` desde frontend. No necesita un backend ni una base de datos.
 
 - `refunds.test.tsx`: interfaz de HU-10; comprueba envío del monto normalizado, consulta de referencias/estado, bloqueo del registro sin aprobación, validación, duplicados y reintento tras fallo de conexión.
+
+- `returns.test.tsx`: formulario HU-06; envío de línea/cantidad/fecha/motivo, aprobación, consulta posterior, cantidad inválida/excesiva, motivo vacío, falta de unidades, duplicados y conexión.
+- `return-validation.test.ts`: fechas calendario válidas/inválidas, años bisiestos y valor inicial con día local.

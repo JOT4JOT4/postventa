@@ -1,0 +1,61 @@
+.return-card button {
+  padding: 0.7rem 1rem;
+  border-radius: 0.3rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.return-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.return-card button:focus-visible,
+.return-form input:focus-visible {
+  outline: 2px solid #346ad3;
+  outline-offset: 2px;
+}
+
+.return-form,
+.return-summary {
+  margin-top: 1.25rem;
+}
+
+.return-input-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1rem;
+}
+
+.return-form input {
+  display: block;
+  width: 100%;
+  border: 1px solid #aab3c2;
+  border-radius: 0.3rem;
+  padding: 0.75rem;
+  font: inherit;
+  color: #202b44;
+  background: white;
+}
+
+.return-form small,
+.return-notice,
+.return-summary dt {
+  display: block;
+  margin-top: 0.65rem;
+  color: #566176;
+  font-size: 0.85rem;
+}
+
+.return-summary dd {
+  margin: 0.3rem 0 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.return-reason {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 1.25rem 0 0;
+}
