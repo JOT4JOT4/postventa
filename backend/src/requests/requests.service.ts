@@ -29,7 +29,14 @@ export class RequestsService {
         if (input.purchaseItemIds.some((id) => !purchase.items.some((item) => item.id === id))) {
           throw new BadRequestException('Los productos seleccionados no pertenecen a la compra.');
         }
+        await manager.query(
+          "SELECT pg_advisory_xact_lock(hashtext('postventa.reclamo.id'))",
+        );
+        const [nextId] = await manager.query(
+          'SELECT COALESCE(MAX(id_reclamo), 0) + 1 AS "nextId" FROM postventa.reclamo',
+        );
         const request = await manager.save(RequestEntity, manager.create(RequestEntity, {
+          id: Number(nextId.nextId),
           purchaseId: purchase.id,
           customerId: purchase.customer.id,
           reason: input.reason,

@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { RequestEntity } from './request.entity';
 
-@Entity('postventa_registro_producto')
+@Entity({ name: 'registro_producto', schema: 'postventa' })
 @Unique('uq_registro_linea', ['requestId', 'purchaseItemId'])
 export class RequestItemEntity {
   @PrimaryGeneratedColumn('identity', { name: 'id_registro_producto' })

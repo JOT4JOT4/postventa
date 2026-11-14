@@ -10,6 +10,9 @@ export default new DataSource({
   database: process.env.DATABASE_NAME ?? 'ecommerce',
   username: process.env.DATABASE_USER ?? 'postgres',
   password: process.env.DATABASE_PASSWORD ?? '',
+  ssl: {
+    rejectUnauthorized: false,
+  },
   entities: [join(__dirname, '../**/*.entity{.ts,.js}')],
   migrations: [join(__dirname, 'migrations/*{.ts,.js}')],
   synchronize: false,
