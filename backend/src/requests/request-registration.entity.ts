@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn }
 import { RequestEntity } from './request.entity';
 import { RequestType } from './request.types';
 
-@Entity({ name: 'registro', schema: 'postventa' })
+@Entity('postventa_registro')
 export class RequestRegistrationEntity {
   @PrimaryColumn({ name: 'id_reclamo', type: 'integer' })
   requestId!: number;

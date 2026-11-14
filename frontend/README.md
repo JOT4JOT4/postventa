@@ -17,3 +17,7 @@ Verificación: `npm run build`, `npm run lint`, `npm test`.
 
 Vitest, Testing Library y jsdom se incorporan solo para probar comportamiento y
 accesibilidad del formulario. No forman parte de las dependencias de ejecución.
+
+El `Dockerfile` ofrece targets `app` y `test`; el segundo incorpora `test/` y ejecuta Vitest. `.dockerignore` excluye variables privadas, dependencias y compilados. Desde la raíz, `npm run test:docker:frontend` ejecuta la suite en un contenedor independiente.
+
+La construcción predeterminada del Dockerfile termina en el target `app`. El target `test` se selecciona explícitamente desde `compose.test.yaml`; construir la aplicación directamente no ejecuta las pruebas en lugar del servicio.

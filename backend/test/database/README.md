@@ -5,3 +5,7 @@
 Ejecutar `npm test -- --runInBand test/database` desde backend, configurando `POSTVENTA_TEST_DATABASE_URL` como indica `../requests/README.md`. No se usa una base compartida del curso.
 
 `history-migration.database.spec.ts` verifica recuperación repetible de entradas iniciales, preservación de estado/fecha/notas y tratamiento explícito de casos antiguos sin metadatos.
+
+## Configuración de conexión
+
+`database-options.spec.ts` comprueba `databaseOptions(read)` con variables ficticias: SSL local/remoto, certificado verificado, valores obligatorios, puerto y mensajes sin secretos. No abre conexiones. Complementa las pruebas con PostgreSQL que verifican las migraciones y la carga real.

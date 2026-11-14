@@ -8,7 +8,10 @@
     "build:backend": "npm --prefix backend run build",
     "build:frontend": "npm --prefix frontend run build",
     "lint": "npm run lint:backend && npm run lint:frontend",
-    "lint:backend": "npm --prefix backend run lint",
-    "lint:frontend": "npm --prefix frontend run lint"
+    "lint:backend": "npm --prefix backend run lint:check",
+    "lint:frontend": "npm --prefix frontend run lint",
+    "test:docker:backend": "docker compose -p postventa-tests -f compose.test.yaml run --build --rm backend-test",
+    "test:docker:frontend": "docker compose -p postventa-tests -f compose.test.yaml run --build --rm frontend-test",
+    "test:docker:down": "docker compose -p postventa-tests -f compose.test.yaml down"
   }
 }

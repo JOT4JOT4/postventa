@@ -16,6 +16,9 @@ export async function openTestDatabase(prefix: string): Promise<DataSource> {
   if (!url || !new URL(url).pathname.endsWith('_test')) {
     throw new Error('Utiliza exclusivamente una base cuyo nombre termine en _test.');
   }
+  if (!['localhost', '127.0.0.1', '[::1]', 'database'].includes(new URL(url).hostname)) {
+    throw new Error('Las pruebas de persistencia requieren PostgreSQL local y aislado.');
+  }
   const schema = `${prefix}_${Date.now()}`;
   const db = new DataSource({
     type: 'postgres', url, schema, synchronize: false,

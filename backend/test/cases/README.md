@@ -13,3 +13,5 @@ Todas usan `CasesController` o `CasesService`; los datos son ficticios.
 Ejecutar `npm test -- --runInBand test/cases` desde backend. Las suites PostgreSQL requieren `POSTVENTA_TEST_DATABASE_URL` apuntando a una base exclusiva terminada en `_test`; crean y eliminan solo sus esquemas temporales. Sin esa variable se omiten y no prueban persistencia.
 
 - `case-flow.database.spec.ts`: flujo HTTP real para cada uno de los cuatro tipos, registro, consulta, rechazo inválido, evaluación, historial y resolución única con PostgreSQL.
+
+- `case-identifiers.http.spec.ts`: prueba detalle, historial, actualización y resolución con IDs negativos, cero, fracciones, texto, valores fuera de INT y límites válidos. Comprueba respuesta 400 sin invocar persistencia y conversión a número para entradas válidas. Usa el controlador y pipe reales con un doble de `CasesService`.
