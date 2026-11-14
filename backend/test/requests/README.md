@@ -43,3 +43,5 @@ no acredita conexión a la base real del curso ni validación de scripts SQL aú
 `database-fixture.spec.ts` comprueba que `openTestDatabase(prefix)` rechaza destinos remotos y bases no exclusivas antes de conectarse. El fixture solo permite localhost/loopback o el servicio Docker `database`, con nombre terminado en `_test`. Las entidades no fijan un esquema global y utilizan el esquema temporal de cada suite.
 
 La descripción histórica anterior no acredita integración con los esquemas actuales del ERP.
+
+El fixture compartido incluye `detalle_pedido.cantidad=3` para comprobar devoluciones sin modificar el contrato de consulta de compras. `database-fixture.ts` carga también `ReturnEntity` y la migración HU-06 en el esquema exclusivo de cada suite.

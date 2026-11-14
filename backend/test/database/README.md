@@ -1,6 +1,6 @@
 # Pruebas de datos iniciales
 
-`demo.database.spec.ts` valida destinos locales, mínimos de diez registros por tabla funcional, veinte casos, diez resoluciones, repetición concurrente sin duplicados, conservación de cambios y correspondencia venta-cliente-producto. `counts()` devuelve los recuentos de las tablas de una base aislada; recibe indirectamente el `DataSource` creado por `database-fixture.ts`.
+`demo.database.spec.ts` valida destinos locales, mínimos de diez registros por tabla funcional, cuarenta casos, diez resoluciones, repetición concurrente sin duplicados, conservación de cambios y correspondencia venta-cliente-producto. `counts()` devuelve los recuentos de las tablas de una base aislada; recibe indirectamente el `DataSource` creado por `database-fixture.ts`.
 
 Ejecutar `npm test -- --runInBand test/database` desde backend, configurando `POSTVENTA_TEST_DATABASE_URL` como indica `../requests/README.md`. No se usa una base compartida del curso.
 
@@ -9,3 +9,5 @@ Ejecutar `npm test -- --runInBand test/database` desde backend, configurando `PO
 ## Configuración de conexión
 
 `database-options.spec.ts` comprueba `databaseOptions(read)` con variables ficticias: SSL local/remoto, certificado verificado, valores obligatorios, puerto y mensajes sin secretos. No abre conexiones. Complementa las pruebas con PostgreSQL que verifican las migraciones y la carga real.
+
+`demo.database.spec.ts` comprueba también diez devoluciones ficticias, repetición sin duplicados, conservación del motivo y cantidades acumuladas dentro de lo comprado. La preparación añade la columna de cantidad únicamente al esquema ficticio local.

@@ -16,7 +16,7 @@ export async function loadDemoData(db: DataSource, mode: string): Promise<void> 
   if (!['prepare', 'seed'].includes(mode)) throw new Error('Indica prepare o seed.');
   const files = mode === 'prepare'
     ? [join(__dirname, '../../../shared-schema.sql')]
-    : ['cases.sql', 'refunds.sql'].map(file => join(__dirname, '../../database/demo', file));
+    : ['cases.sql', 'refunds.sql', 'returns.sql'].map(file => join(__dirname, '../../database/demo', file));
   const statements = await Promise.all(files.map(file => readFile(file, 'utf8')));
   await db.transaction(async manager => {
     await manager.query('SELECT pg_advisory_xact_lock(1793000001)');

@@ -7,7 +7,7 @@ consulta de casos y la navegación, sin servicios reales.
 - `Dockerfile`: entorno local Vite con Node 24 y usuario sin privilegios.
 - `index.html`: documento raíz, idioma español, título y metadatos del registro.
 - `.env.example`: URL pública del backend; nunca incluir secretos en `VITE_*`.
-- `vite.config.ts`: plugin React; `vitest.config.ts`: entorno jsdom y preparación de tests.
+- `vite.config.ts`: plugin React; `vitest.config.ts`: entorno jsdom, preparación y descubrimiento de tests `.test.ts` y `.test.tsx`.
 - `tailwind.config.js` / `postcss.config.js`: estilos base originales.
 - `eslint.config.js`: análisis estático. `tsconfig*.json`: comprobación estricta y compilación.
 

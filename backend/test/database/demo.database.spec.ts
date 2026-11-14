@@ -13,7 +13,8 @@ describe('Protección de datos ficticios', () => {
 databaseSuite('Datos iniciales reproducibles del Sprint 2', () => {
   let db: DataSource;
   const tables = ['cliente', 'pedido', 'venta', 'inv_producto', 'detalle_pedido',
-    'reclamo', 'postventa_registro', 'postventa_registro_producto', 'postventa_historial', 'postventa_resolucion', 'reembolso'];
+    'reclamo', 'postventa_registro', 'postventa_registro_producto', 'postventa_historial',
+    'postventa_resolucion', 'reembolso', 'devolucion'];
   beforeAll(async () => {
     db = await openTestDatabase('demo_seed');
     await loadDemoData(db, 'prepare');
@@ -31,9 +32,10 @@ databaseSuite('Datos iniciales reproducibles del Sprint 2', () => {
     await loadDemoData(db, 'seed');
     const before = await counts();
     for (const count of Object.values(before)) expect(count).toBeGreaterThanOrEqual(10);
-    expect(before.reclamo).toBe(30);
+    expect(before.reclamo).toBe(40);
     expect(before.postventa_resolucion).toBe(10);
     expect(before.reembolso).toBe(10);
+    expect(before.devolucion).toBe(10);
     await Promise.all([loadDemoData(db, 'seed'), loadDemoData(db, 'seed')]);
     await loadDemoData(db, 'prepare');
     expect(await counts()).toEqual(before);
@@ -66,5 +68,18 @@ databaseSuite('Datos iniciales reproducibles del Sprint 2', () => {
     expect(invalid).toEqual([]);
     expect(await db.query(`SELECT h.id_historial FROM postventa_historial h
       WHERE h.estado_nuevo='Rechazado' AND length(trim(coalesce(h.nota,'')))=0`)).toEqual([]);
+  });
+
+  it('conserva las devoluciones existentes al repetir la carga y la preparación', async () => {
+    await db.query("UPDATE devolucion SET motivo='Motivo ficticio conservado' WHERE id_reclamo=300001");
+    const before = await counts();
+    await loadDemoData(db, 'prepare');
+    await loadDemoData(db, 'seed');
+    expect(await counts()).toEqual(before);
+    expect((await db.query('SELECT motivo FROM devolucion WHERE id_reclamo=300001'))[0].motivo)
+      .toBe('Motivo ficticio conservado');
+    expect(await db.query(`SELECT d.id_detalle_ped FROM detalle_pedido d JOIN devolucion r
+      ON r.id_detalle_ped=d.id_detalle_ped GROUP BY d.id_detalle_ped,d.cantidad
+      HAVING sum(r.cantidad)>d.cantidad`)).toEqual([]);
   });
 });

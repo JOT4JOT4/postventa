@@ -12,4 +12,10 @@ Las tablas históricas `peticion` y `detalle_peticion`, conservadas para migrar 
 
 ## Solicitudes de reembolso HU-10
 
-`refunds.sql` agrega diez casos ficticios aprobados (IDs 200001–200010), tipo Reembolso, líneas de compra, historial y una solicitud Pendiente por caso. Solo completa los casos insertados en esa ejecución; repetir la carga conserva cambios existentes y no duplica solicitudes. El ejecutor procesa `cases.sql` y luego `refunds.sql` bajo una misma transacción y bloqueo. La base nueva queda con treinta casos y diez solicitudes de reembolso; los veinte casos originales se mantienen.
+`refunds.sql` agrega diez casos ficticios aprobados (IDs 200001–200010), tipo Reembolso, líneas de compra, historial y una solicitud Pendiente por caso. Solo completa los casos insertados en esa ejecución; repetir la carga conserva cambios existentes y no duplica solicitudes. El ejecutor procesa `cases.sql` y luego `refunds.sql` bajo una misma transacción y bloqueo. HU-10 suma esos diez casos a los veinte originales, que se mantienen. HU-06 agrega los casos descritos en la siguiente sección.
+
+## Devoluciones HU-06
+
+`returns.sql` agrega diez casos ficticios aprobados (IDs 300001–300010), tipo Devolución, líneas de compra, historial y una devolución por caso, con cantidad 1, fecha actual y motivo ficticio. Solo crea hijos de casos insertados en esa ejecución; repetirlo conserva modificaciones y no duplica registros. Se ejecuta después de `refunds.sql` en la misma transacción. La instalación nueva queda con cuarenta casos, diez reembolsos y diez devoluciones.
+
+`shared-schema.sql` incluye `detalle_pedido.cantidad` con valor ficticio 3 para las líneas nuevas. Si un volumen local antiguo no tenía esa columna, `prepare` la incorpora con ese valor de demostración; si ya existe, no sobrescribe cantidades. No representa las cantidades reales del ERP ni autoriza alterar tablas remotas.

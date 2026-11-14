@@ -18,3 +18,5 @@ en PostgreSQL. No se conecta al ERP real del curso durante estas verificaciones.
 - `cases/README.md`: detalla las regresiones de evaluación, concurrencia y errores.
 
 - `refunds/`: pruebas HTTP, persistencia, concurrencia, flujo integrado local y errores de HU-10. Ver el README de esa carpeta.
+
+- `returns/`: contrato HTTP, persistencia, concurrencia, flujo conectado local y errores de HU-06. Ver el README de esa carpeta.

@@ -16,3 +16,5 @@
 - `cases/`: gestión (HU-04) y consulta (HU-12) de casos.
 
 - `refunds/`: sección de registro/consulta de reembolsos HU-10, montada desde el detalle de casos; cliente API, hook y estilos propios.
+
+- `returns/`: interfaz HU-06 de registro/consulta de devoluciones, productos, cantidades, fecha y motivo; se monta en el detalle de casos.

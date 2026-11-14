@@ -55,3 +55,7 @@ IDs de casos antiguos con los de las tablas compartidas.
 ## Registro de reembolsos — HU-10
 
 `1794652800000-CreateRefundRequests.ts`: `up(runner)` crea `reembolso` con ID generado, FK a `reclamo`, monto NUMERIC(15,2) positivo, estado inicial Pendiente, fecha con zona y UNIQUE por caso. No altera las tablas previas. `down()` exige conciliación manual para no borrar solicitudes.
+
+## Registro de devoluciones — HU-06
+
+`1794652801000-CreateProductReturns.ts`: `up(runner)` crea únicamente `devolucion`, con ID entero generado, UNIQUE por caso, referencias restrictivas al caso/producto/línea y FK compuesta a las líneas asociadas al caso. Exige cantidad positiva, fecha DATE y motivo no vacío de hasta 2000 caracteres. Índice sobre la línea original para consultar cantidades acumuladas. `down()` exige conciliación manual para conservar datos. La aplicación lee `detalle_pedido.cantidad`; la fuente externa debe aportar ese campo. La migración no altera tablas de otros módulos.
