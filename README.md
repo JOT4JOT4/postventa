@@ -1,6 +1,6 @@
-# Módulo de Postventa — MVP Sprint 2
+# Módulo de Postventa
 
-Aplicación React y TypeScript con API NestJS, TypeORM y PostgreSQL. Implementa el registro y clasificación inicial de solicitudes, consulta de casos, gestión de reclamos, evaluación mediante estados, historial y resolución final. El alcance corresponde a HU-01, HU-03, HU-04, HU-05, HU-12, HU-14 y HU-17 indicadas por el equipo.
+Aplicación React y TypeScript con API NestJS, TypeORM y PostgreSQL. Implementa el registro y clasificación inicial de solicitudes, consulta de casos, gestión de reclamos, evaluación mediante estados, historial y resolución final. Incluye el MVP del Sprint 2 y el registro de solicitudes de reembolso HU-10.
 
 El registro local consulta `venta → pedido → cliente` y `detalle_pedido → inv_producto`. Deriva el cliente desde la compra y verifica que los productos seleccionados pertenezcan a ella. Guarda el caso en `reclamo`, su tipo y fecha en `postventa_registro`, y sus productos en `postventa_registro_producto`. El historial inicial se guarda en la misma transacción. Los tipos son Reclamo, Cambio, Devolución y Reembolso; el estado inicial es Abierto.
 
@@ -18,7 +18,7 @@ La secuencia también se ejecuta con el volumen existente. **No es necesario eje
 
 `POSTVENTA_API_PORT` y `POSTVENTA_WEB_PORT` permiten cambiar puertos desde `.env`. Se publican solo en la interfaz local; PostgreSQL no expone puerto al equipo. Docker utiliza una base llamada `postventa` y el modelo local de las migraciones. Las entidades no fijan el esquema `postventa` del ERP. No acredita conexión con Neon.
 
-## Datos iniciales del Sprint 2
+## Datos iniciales locales
 
 | Tabla funcional | Registros en una instalación nueva |
 | --- | ---: |
@@ -27,13 +27,14 @@ La secuencia también se ejecuta con el volumen existente. **No es necesario eje
 | venta | 10 |
 | inv_producto | 10 |
 | detalle_pedido | 20 |
-| reclamo | 20 |
-| postventa_registro | 20 |
-| postventa_registro_producto | 20 |
-| postventa_historial | 49 |
+| reclamo | 30 |
+| postventa_registro | 30 |
+| postventa_registro_producto | 30 |
+| postventa_historial | 79 |
 | postventa_resolucion | 10 |
+| reembolso | 10 |
 
-Son datos ficticios identificados como tales. Los casos de demostración usan IDs `100001–100020`, los cuatro tipos y los cinco estados. Los primeros diez están cerrados y tienen resolución. Los recuentos pueden aumentar con la utilización de los formularios. Los archivos históricos `peticion`/`detalle_peticion` y la tabla interna de migraciones quedan fuera del modelo funcional activo; se conservan sin duplicar registros.
+Son datos ficticios identificados como tales. Los casos de demostración usan IDs `100001–100020`, los cuatro tipos y los cinco estados. Los primeros diez están cerrados y tienen resolución. HU-10 agrega diez casos aprobados 200001–200010 con solicitudes de reembolso ficticias. Los recuentos pueden aumentar con la utilización de los formularios. Los archivos históricos `peticion`/`detalle_peticion` y la tabla interna de migraciones quedan fuera del modelo funcional activo; se conservan sin duplicar registros.
 
 `shared-schema.sql` es una representación mínima para la prueba local, no la implementación completa de Ventas, CRM ni Inventario. La conexión real del ERP requiere sus estructuras y configuración acordadas. La semilla está restringida a destinos locales y requiere `POSTVENTA_DEMO_DATA=true`; Docker activa ese modo de demostración explícitamente.
 
@@ -108,3 +109,18 @@ npm run test:docker:down
 - `backend/Dockerfile` y `frontend/Dockerfile`: target `app` para desarrollo y target `test` para verificación. Sus `.dockerignore` excluyen secretos y resultados locales.
 
 `npm run lint` en la raíz es una comprobación sin modificación automática. El comando original `backend/npm run lint` conserva `--fix`; para comprobar backend directamente usar `npm run lint:check`.
+
+## Solicitud de reembolso — HU-10
+
+En el detalle de un caso, abrir Consultar reembolso. Si está Aprobado y no tiene solicitud, ingresar un monto positivo sin separador de miles y registrar. Se guardan el importe, el vínculo con el caso y el estado Pendiente; compra y cliente se obtienen del caso. Se permite una solicitud por caso, conforme al modelo ER.
+
+Los casos ficticios 100013 y 100017 están aprobados y permiten probar un registro nuevo. Los casos 200001–200010 permiten consultar ejemplos ya registrados. No se ejecuta un pago ni se altera el estado del caso.
+
+API: GET/POST `/postventa/solicitudes/:id/reembolsos`, POST con `{"amount":"1500.25"}`. Las respuestas contienen ID de solicitud, caso, compra, cliente, monto decimal como texto, estado y fecha. No se admiten referencias ni estado impuestos por el navegador.
+
+- `backend/src/refunds/`: servicio, entidad, DTO, lectura y controlador; documentación de errores y reglas en su README.
+- `backend/test/refunds/`: pruebas HTTP, PostgreSQL, concurrencia y errores.
+- `frontend/src/refunds/`: sección, estado de formulario, cliente HTTP y estilos.
+- `backend/database/demo/refunds.sql`: diez solicitudes ficticias y sus antecedentes.
+
+La nueva migración crea únicamente la tabla local de solicitudes. Las integraciones con Finanzas, autenticación, otras historias y el esquema compartido no se amplían como parte de HU-10.

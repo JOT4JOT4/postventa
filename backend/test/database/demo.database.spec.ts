@@ -13,7 +13,7 @@ describe('Protección de datos ficticios', () => {
 databaseSuite('Datos iniciales reproducibles del Sprint 2', () => {
   let db: DataSource;
   const tables = ['cliente', 'pedido', 'venta', 'inv_producto', 'detalle_pedido',
-    'reclamo', 'postventa_registro', 'postventa_registro_producto', 'postventa_historial', 'postventa_resolucion'];
+    'reclamo', 'postventa_registro', 'postventa_registro_producto', 'postventa_historial', 'postventa_resolucion', 'reembolso'];
   beforeAll(async () => {
     db = await openTestDatabase('demo_seed');
     await loadDemoData(db, 'prepare');
@@ -31,8 +31,9 @@ databaseSuite('Datos iniciales reproducibles del Sprint 2', () => {
     await loadDemoData(db, 'seed');
     const before = await counts();
     for (const count of Object.values(before)) expect(count).toBeGreaterThanOrEqual(10);
-    expect(before.reclamo).toBe(20);
+    expect(before.reclamo).toBe(30);
     expect(before.postventa_resolucion).toBe(10);
+    expect(before.reembolso).toBe(10);
     await Promise.all([loadDemoData(db, 'seed'), loadDemoData(db, 'seed')]);
     await loadDemoData(db, 'prepare');
     expect(await counts()).toEqual(before);
@@ -44,6 +45,15 @@ databaseSuite('Datos iniciales reproducibles del Sprint 2', () => {
     await loadDemoData(db, 'seed');
     expect((await db.query('SELECT motivo FROM reclamo WHERE id_reclamo=100001'))[0].motivo)
       .toBe('Información conservada');
+    expect(await counts()).toEqual(before);
+  });
+
+  it('conserva el importe y la unicidad de los reembolsos ficticios al repetir la carga', async () => {
+    await db.query('UPDATE reembolso SET monto_reembolsado=1250.75 WHERE id_reclamo=200001');
+    const before = await counts();
+    await loadDemoData(db, 'seed');
+    expect((await db.query('SELECT monto_reembolsado FROM reembolso WHERE id_reclamo=200001'))[0])
+      .toEqual({ monto_reembolsado: '1250.75' });
     expect(await counts()).toEqual(before);
   });
 

@@ -9,3 +9,7 @@ Se utilizan las relaciones actuales de las ventas de la semilla local para deriv
 Ejecutar con `POSTVENTA_DEMO_DATA=true`, destino local y base `postventa`, `postventa_demo` o terminada en `_test`. Usar `npm run demo:prepare`, `npm run migration:run`, `npm run demo:seed` desde backend con sus variables `DATABASE_*` configuradas. Docker aplica esa secuencia automáticamente, también con un volumen ya existente. No se requiere eliminar volúmenes.
 
 Las tablas históricas `peticion` y `detalle_peticion`, conservadas para migrar registros antiguos, no forman parte del modelo transaccional activo. No se duplican casos allí para inflar el volumen. La tabla interna de migraciones tampoco es una tabla funcional.
+
+## Solicitudes de reembolso HU-10
+
+`refunds.sql` agrega diez casos ficticios aprobados (IDs 200001–200010), tipo Reembolso, líneas de compra, historial y una solicitud Pendiente por caso. Solo completa los casos insertados en esa ejecución; repetir la carga conserva cambios existentes y no duplica solicitudes. El ejecutor procesa `cases.sql` y luego `refunds.sql` bajo una misma transacción y bloqueo. La base nueva queda con treinta casos y diez solicitudes de reembolso; los veinte casos originales se mantienen.

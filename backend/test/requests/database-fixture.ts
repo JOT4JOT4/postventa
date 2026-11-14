@@ -8,6 +8,8 @@ import { CaseHistoryEntity } from '../../src/cases/case-history.entity';
 import { CreateRequests1792800000000 } from '../../src/database/migrations/1792800000000-CreateRequests';
 import { AlignRegistrationSchema1792886400000 } from '../../src/database/migrations/1792886400000-AlignRegistrationSchema';
 import { AddCaseManagement1793000000000 } from '../../src/database/migrations/1793000000000-AddCaseManagement';
+import { CreateRefundRequests1794652800000 } from '../../src/database/migrations/1794652800000-CreateRefundRequests';
+import { RefundEntity } from '../../src/refunds/refund.entity';
 
 export const databaseSuite = process.env.POSTVENTA_TEST_DATABASE_URL ? describe : describe.skip;
 
@@ -22,8 +24,8 @@ export async function openTestDatabase(prefix: string): Promise<DataSource> {
   const schema = `${prefix}_${Date.now()}`;
   const db = new DataSource({
     type: 'postgres', url, schema, synchronize: false,
-    entities: [RequestEntity, RequestRegistrationEntity, RequestItemEntity, CaseResolutionEntity, CaseHistoryEntity],
-    migrations: [CreateRequests1792800000000, AlignRegistrationSchema1792886400000, AddCaseManagement1793000000000, BackfillInitialHistory1793088000000],
+    entities: [RequestEntity, RequestRegistrationEntity, RequestItemEntity, CaseResolutionEntity, CaseHistoryEntity, RefundEntity],
+    migrations: [CreateRequests1792800000000, AlignRegistrationSchema1792886400000, AddCaseManagement1793000000000, BackfillInitialHistory1793088000000, CreateRefundRequests1794652800000],
     extra: { options: `-c search_path=${schema}` },
   });
   await db.initialize();

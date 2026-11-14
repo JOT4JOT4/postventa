@@ -17,3 +17,5 @@
   `?caseId=` y "Página no encontrada" para rutas o IDs inválidos.
 
 Ejecutar `npm test` desde frontend. No necesita un backend ni una base de datos.
+
+- `refunds.test.tsx`: interfaz de HU-10; comprueba envío del monto normalizado, consulta de referencias/estado, bloqueo del registro sin aprobación, validación, duplicados y reintento tras fallo de conexión.
