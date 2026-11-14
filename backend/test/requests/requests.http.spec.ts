@@ -13,9 +13,6 @@ describe('HU-01: contrato HTTP de registro', () => {
   const gateway = { findById: jest.fn() };
   const manager = {
     create: jest.fn((_entity: unknown, value: unknown) => value),
-    query: jest.fn(async (sql: string) => sql.includes('MAX(id_reclamo)')
-      ? [{ nextId: ++sequence }]
-      : []),
     save: jest.fn(async (_entity: unknown, value: object | object[]) =>
       Array.isArray(value) ? value : { ...value, id: ++sequence, createdAt: new Date() }),
   };

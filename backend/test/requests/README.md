@@ -37,3 +37,9 @@ no acredita conexión a la base real del curso ni validación de scripts SQL aú
   confirmó ID 1, estado Abierto y dos productos vinculados.
 - No se modificaron ni conectaron bases del curso. El entorno temporal se retira
   tras verificarlo; solo queda la evidencia visual fuera del repositorio.
+
+## Protección y actualización de la base de trabajo
+
+`database-fixture.spec.ts` comprueba que `openTestDatabase(prefix)` rechaza destinos remotos y bases no exclusivas antes de conectarse. El fixture solo permite localhost/loopback o el servicio Docker `database`, con nombre terminado en `_test`. Las entidades no fijan un esquema global y utilizan el esquema temporal de cada suite.
+
+La descripción histórica anterior no acredita integración con los esquemas actuales del ERP.

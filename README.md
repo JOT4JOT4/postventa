@@ -2,7 +2,7 @@
 
 Aplicación React y TypeScript con API NestJS, TypeORM y PostgreSQL. Implementa el registro y clasificación inicial de solicitudes, consulta de casos, gestión de reclamos, evaluación mediante estados, historial y resolución final. El alcance corresponde a HU-01, HU-03, HU-04, HU-05, HU-12, HU-14 y HU-17 indicadas por el equipo.
 
-El registro consulta `venta → pedido → cliente` y `detalle_pedido → inv_producto`. Deriva el cliente desde la compra y verifica que los productos seleccionados pertenezcan a ella. Guarda el caso en `reclamo`, su tipo y fecha en `postventa_registro`, y sus productos en `postventa_registro_producto`. El historial inicial se guarda en la misma transacción. Los tipos son Reclamo, Cambio, Devolución y Reembolso; el estado inicial es Abierto.
+El registro local consulta `venta → pedido → cliente` y `detalle_pedido → inv_producto`. Deriva el cliente desde la compra y verifica que los productos seleccionados pertenezcan a ella. Guarda el caso en `reclamo`, su tipo y fecha en `postventa_registro`, y sus productos en `postventa_registro_producto`. El historial inicial se guarda en la misma transacción. Los tipos son Reclamo, Cambio, Devolución y Reembolso; el estado inicial es Abierto.
 
 ## Inicio local con Docker
 
@@ -16,7 +16,7 @@ Docker prepara maestros mínimos ficticios, aplica las migraciones y carga casos
 
 La secuencia también se ejecuta con el volumen existente. **No es necesario ejecutar `docker compose down -v`.** La carga conserva filas existentes y no duplica casos. Para detener los servicios conservando los datos, usar `docker compose down`.
 
-`POSTVENTA_API_PORT` y `POSTVENTA_WEB_PORT` permiten cambiar puertos desde `.env`. Se publican solo en la interfaz local; PostgreSQL no expone puerto al equipo. Docker utiliza una base llamada `postventa`; esto no significa que exista un esquema SQL llamado `postventa`, ni acredita conexión con Neon.
+`POSTVENTA_API_PORT` y `POSTVENTA_WEB_PORT` permiten cambiar puertos desde `.env`. Se publican solo en la interfaz local; PostgreSQL no expone puerto al equipo. Docker utiliza una base llamada `postventa` y el modelo local de las migraciones. Las entidades no fijan el esquema `postventa` del ERP. No acredita conexión con Neon.
 
 ## Datos iniciales del Sprint 2
 
@@ -53,7 +53,7 @@ El registro selecciona líneas compradas y no solicita cantidades de devolución
 
 Requisitos fuera de Docker: Node.js 20 o superior, npm 10 o superior y PostgreSQL 15 o superior. Instalar con `npm ci --prefix backend` y `npm ci --prefix frontend`. Configurar los `.env` de ambas aplicaciones según sus ejemplos; no versionar secretos.
 
-Para preparar una base **local de demostración** desde backend: configurar `DATABASE_*` y `POSTVENTA_DEMO_DATA=true`, ejecutar `npm run demo:prepare`, `npm run migration:run`, `npm run demo:seed`, y luego `npm run start:dev`. Para datos reales, no activar el modo demo; aplicar los scripts acordados y las migraciones sobre el destino autorizado. `synchronize` permanece desactivado.
+Para preparar una base **local de demostración** desde backend: configurar `DATABASE_*` y `POSTVENTA_DEMO_DATA=true`, ejecutar `npm run demo:prepare`, `npm run migration:run`, `npm run demo:seed`, y luego `npm run start:dev`. La adaptación al esquema compartido sigue pendiente. Estas migraciones describen el MVP local: no aplicarlas al ERP real sin revisar y acordar antes las referencias y la migración objetivo. `synchronize` permanece desactivado.
 
 ```sh
 npm run build --prefix backend
@@ -86,3 +86,25 @@ Cada carpeta incluye documentación de sus archivos y conexiones.
 Se dispone de formulario de registro, listado de consulta y formularios de gestión conectados a la API. Para mostrar el flujo parcial: registrar un caso, abrirlo en Solicitudes, pasar a En revisión, aprobar o rechazar con motivo, consultar el historial y registrar la resolución en un estado terminal.
 
 La exposición del flujo en clase es una actividad del equipo; no se considera realizada por disponer del código. La integración remota con el ERP del curso debe validarse con los demás grupos. Autenticación/permisos, ejecución de devoluciones/cambios/reembolsos, indicadores y dashboards no se amplían como parte de esta corrección del Sprint 2.
+
+## Pruebas reproducibles con Docker
+
+Con el `.env` local preparado:
+
+```sh
+npm run test:docker:backend
+npm run test:docker:frontend
+npm run test:docker:down
+```
+
+`compose.test.yaml` utiliza una red interna y PostgreSQL efímero sin puertos ni volumen persistente. No modifica el volumen de desarrollo. El comando de cierre elimina únicamente los contenedores y red del proyecto de pruebas `postventa-tests`.
+
+## Archivos de entorno y preparación
+
+- `.env.example`: contraseña local y puertos externos; copiar a `.env`, completar y no versionar.
+- `compose.yaml`: servicios de aplicación, base local persistente y publicación solo por loopback. No conecta con Neon.
+- `compose.test.yaml`: servicios de prueba de backend/frontend y base exclusiva con almacenamiento temporal.
+- `backend/src/database/database-options.ts`: configuración común para servidor y migraciones; `DATABASE_SSL=false` para Docker local. El certificado se verifica cuando se activa SSL.
+- `backend/Dockerfile` y `frontend/Dockerfile`: target `app` para desarrollo y target `test` para verificación. Sus `.dockerignore` excluyen secretos y resultados locales.
+
+`npm run lint` en la raíz es una comprobación sin modificación automática. El comando original `backend/npm run lint` conserva `--fix`; para comprobar backend directamente usar `npm run lint:check`.

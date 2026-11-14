@@ -1,5 +1,18 @@
 # Persistencia
 
+El modelo activo de esta base de trabajo es el local del Sprint 2: `reclamo`,
+`postventa_registro`, `postventa_registro_producto`, `postventa_historial` y
+`postventa_resolucion`. Las entidades no fijan un esquema externo; las pruebas
+pueden utilizar su esquema temporal exclusivo. La correspondencia con los esquemas
+del ERP se acuerda durante Sprint 3; no se aplica desde esta preparación.
+
+- `database-options.ts`: `databaseOptions(read)` recibe una función de lectura de
+  variables y devuelve opciones PostgreSQL para aplicación y migraciones. Exige
+  host, base, usuario y contraseña; valida puerto y SSL. Los errores solo indican
+  nombres de variables. Local usa SSL desactivado por defecto; remoto exige SSL
+  con certificado verificado, salvo selección explícita de `DATABASE_SSL=false`.
+  No crea conexiones, tablas ni datos.
+
 - `data-source.ts`: exporta el `DataSource` PostgreSQL, lee `DATABASE_*` y descubre
   entidades y migraciones con rutas relativas, tanto en `src` como en `dist`.
 - `registration-upgrade.ts`: `ensureSharedSchema(runner)` comprueba las estructuras

@@ -1,13 +1,18 @@
 # Registro de solicitudes — HU-01
 
-## Relación con el esquema definitivo
+## Relación con el esquema local del Sprint 2
 
 Se lee `venta.id_venta → pedido.id_pedido → cliente.id_cliente` para identificar
 al cliente, y `detalle_pedido.id_detalle_ped → inv_producto.id_producto` para
 mostrar los productos y validar que pertenecen al pedido de la venta.
 Los nombres SQL son minúsculos sin comillas, la convención de PostgreSQL para
-los nombres VENTA, PEDIDO, CLIENTE y DETALLE_PEDIDO del diagrama. No se crea ni
-modifica ninguna tabla de Ventas, CRM o Inventario.
+los nombres VENTA, PEDIDO, CLIENTE y DETALLE_PEDIDO del diagrama. En Docker son
+maestros mínimos ficticios de una base exclusiva; no son las tablas del ERP real.
+El adaptador solo las lee. No crea ni modifica tablas de otros módulos.
+
+Los esquemas `ecommerce_ventas`, `inventario`, `master` y `postventa` aparecen en
+las copias de otros módulos o en avances de integración. Sus tipos, claves y
+contratos deben acordarse con los equipos responsables antes de programar esa integración.
 
 `reclamo` conserva los cinco campos del diagrama: `id_reclamo`, `id_venta`,
 `id_cliente`, `motivo` y `estado`. El diagrama no representa el tipo ni la

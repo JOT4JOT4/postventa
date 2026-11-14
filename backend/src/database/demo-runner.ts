@@ -1,7 +1,7 @@
+import 'dotenv/config';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { DataSource } from 'typeorm';
-import database from './data-source';
 
 export function validateDemoTarget(environment: NodeJS.ProcessEnv): void {
   const host = environment.DATABASE_HOST ?? 'localhost';
@@ -27,6 +27,7 @@ export async function loadDemoData(db: DataSource, mode: string): Promise<void> 
 async function main(): Promise<void> {
   if (process.env.POSTVENTA_DEMO_DATA !== 'true') return;
   validateDemoTarget(process.env);
+  const { default: database } = await import('./data-source');
   try {
     await database.initialize();
     await loadDemoData(database, process.argv[2]);

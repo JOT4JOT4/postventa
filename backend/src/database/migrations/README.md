@@ -1,4 +1,6 @@
-# Migraciones de HU-01
+# Migraciones del modelo local de Postventa
+
+Estas migraciones se conservan sin reescribir. Describen el contrato local del Sprint 2 y no migran automáticamente los esquemas nuevos del ERP compartido. La preparación previa al Sprint 3 alinea las entidades con este historial existente; no modifica bases remotas.
 
 ## Archivos
 
@@ -35,7 +37,7 @@ La secuencia del nuevo caso se ajusta para no reutilizar IDs existentes.
 
 ## Prerrequisito y ejecución
 
-Cargar primero las tablas compartidas acordadas: `cliente`, `pedido`, `venta`,
+En el entorno local, preparar primero las representaciones mínimas ficticias: `cliente`, `pedido`, `venta`,
 `detalle_pedido` e `inv_producto`, con sus claves del diagrama. Luego ejecutar
 `npm run migration:run` desde backend. Docker lo hace al iniciar el backend.
 Si faltan esas estructuras, la actualización falla con un mensaje administrativo;

@@ -1,28 +1,37 @@
-# Backend de Postventa
+# Backend de Postventa — base local del Sprint 2
 
-Aplicación NestJS. HU-01 incorpora únicamente el registro de solicitudes. No incorpora
-autenticación, seguimiento, evaluación ni operaciones de inventario o finanzas.
-HU-12 agrega el listado de casos `GET /postventa/solicitudes` en `src/cases/`.
+Aplicación NestJS con registro y clasificación, consulta de casos, evaluación por estados, historial básico y resolución. No implementa autenticación ni ejecuta cambios de producto, devoluciones de inventario o reembolsos financieros.
 
-## Archivos y ejecución
+## Organización y archivos
 
+- `src/`: arranque y módulos `requests`, `cases`, `database`, cada uno con documentación de funciones y conexiones.
+- `test/`: pruebas HTTP, de reglas, PostgreSQL, migraciones y configuración; documentación por carpeta.
+- `database/demo/`: semilla ficticia del alcance local; no sustituye datos del ERP.
 - `package.json` y `package-lock.json`: dependencias y comandos reproducibles.
-- `Dockerfile`: instala dependencias, compila y ejecuta con usuario sin privilegios.
-- `.env.example`: nombres de variables para el entorno local; copiar a `.env` si no se usa Docker.
-- `tsconfig.json` / `tsconfig.build.json`: compilación estricta del código y exclusión de tests del build.
-- `.eslintrc.js`: reglas estáticas. `jest.config.js`: transformación TypeScript y descubrimiento de tests.
-- `src/`: arranque, persistencia y registro; `test/`: pruebas aisladas.
+- `Dockerfile`: target `app` para el servidor compilado y `test` para ejecutar Jest con PostgreSQL aislado.
+- `.dockerignore`: excluye entornos privados, dependencias y compilados del contexto.
+- `.env.example`: variables de conexión local y origen del frontend. No contiene una contraseña funcional.
+- `tsconfig.json` / `tsconfig.build.json`: TypeScript estricto y exclusión de tests del build.
+- `.eslintrc.js`: análisis estático; `jest.config.js`: transformación y descubrimiento de tests.
 
-Desde la raíz, iniciar primero `docker compose up -d database` y cargar el SQL
-compartido aprobado. Luego ejecutar `docker compose up --build`. El arranque aplica
-las migraciones pendientes; falla si faltan las tablas externas, sin crearlas. Fuera de Docker:
-`npm ci`, configurar `.env`, `npm run migration:run`, `npm run start:dev`.
+## Arranque
 
-Verificación: `npm run build`, `npm run lint:check`, `npm run test:hu01` y
-`npm test -- test/cases` (HU-04 y HU-12).
-El comando antiguo `npm run lint` modifica archivos; `lint:check` solo comprueba.
+Usar el README de raíz: preparar `.env` y ejecutar `docker compose up --build -d --wait`.
+Compose prepara maestros mínimos ficticios, aplica las migraciones locales y carga los casos de demostración. Conserva el volumen y repite la carga sin duplicar ni sobrescribir casos.
 
-La aplicación es para desarrollo local; la autenticación corresponde a HU-16 y
-debe integrarse antes de exponerla fuera del equipo. El adaptador PostgreSQL ya lee
-las relaciones del esquema definitivo. La conexión a la BD real del curso queda
-sujeta a sus credenciales, estructuras y disponibilidad; no se ha verificado.
+Fuera de Docker: instalar con `npm ci`, completar `.env`, preparar una base local con los antecedentes ficticios y ejecutar `npm run migration:run` antes de `npm run start:dev`. El procedimiento detallado está en la raíz; la base de Docker no publica puerto.
+
+Servidor y migraciones comparten `src/database/database-options.ts`. Requiere `DATABASE_HOST`, `DATABASE_NAME`, `DATABASE_USER` y `DATABASE_PASSWORD`; puerto 5432 por defecto. `DATABASE_SSL=false` en Docker local; si se activa SSL, se verifica el certificado. Los errores de configuración no muestran valores privados.
+
+El modelo local usa `reclamo` y tablas `postventa_*`; las entidades no fijan un esquema remoto. Las migraciones de esta versión no adaptan los esquemas compartidos de otros equipos. No se ha acreditado conexión a la base real del curso.
+
+## Verificación
+
+Desde la raíz: `npm run test:docker:backend`; al terminar, `npm run test:docker:down`.
+Fuera de Docker: `npm run build`, `npm run lint:check`, `npm test -- --runInBand`, con `POSTVENTA_TEST_DATABASE_URL` hacia una base local exclusiva terminada en `_test` para incluir persistencia. Sin ella se omiten esas suites.
+
+`npm run lint` del backend conserva corrección automática; `lint:check` no modifica archivos. El comando de lint de la raíz utiliza la variante de comprobación.
+
+Esta aplicación debe permanecer en desarrollo local con datos ficticios mientras no se implemente la identidad y los permisos de su sprint.
+
+La construcción predeterminada del Dockerfile termina en el target `app`. El target `test` se selecciona explícitamente desde `compose.test.yaml`; construir la aplicación directamente no ejecuta las pruebas en lugar del servicio.

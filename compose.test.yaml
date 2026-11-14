@@ -1,0 +1,33 @@
+services:
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: postventa_test
+      POSTGRES_USER: postventa
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en el archivo .env}
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postventa -d postventa_test"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+  backend-test:
+    build:
+      context: ./backend
+      target: test
+    environment:
+      POSTVENTA_TEST_DATABASE_URL: postgresql://postventa@database:5432/postventa_test
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en el archivo .env}
+    volumes:
+      - ./shared-schema.sql:/shared-schema.sql:ro
+    depends_on:
+      database:
+        condition: service_healthy
+  frontend-test:
+    build:
+      context: ./frontend
+      target: test
+networks:
+  default:
+    internal: true
