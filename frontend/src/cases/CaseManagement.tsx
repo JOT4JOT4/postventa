@@ -4,6 +4,7 @@ import { useCaseManagement } from './use-case-management';
 import { CaseInformation } from './CaseInformation';
 import { CaseStatusForm } from './CaseStatusForm';
 import { CaseResolutionForm } from './CaseResolutionForm';
+import { RefundSection } from '../refunds/RefundSection';
 import './case-management.css';
 
 interface CaseManagementProps {
@@ -102,6 +103,7 @@ export function CaseManagement({ caseId, onBack }: CaseManagementProps) {
             <CaseInformation caseDetail={caseDetail} />
             <CaseStatusForm management={management} />
             <CaseResolutionForm management={management} />
+            <RefundSection key={caseDetail.id} caseId={caseDetail.id} status={caseDetail.status} />
           </div>
 
           {/* Lateral History */}

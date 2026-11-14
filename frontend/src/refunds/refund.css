@@ -1,0 +1,58 @@
+.refund-card button {
+  padding: 0.7rem 1rem;
+  border-radius: 0.3rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.refund-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.refund-card button:focus-visible {
+  outline: 2px solid #346ad3;
+  outline-offset: 2px;
+}
+
+.refund-form,
+.refund-summary {
+  margin-top: 1.25rem;
+}
+
+.refund-form input {
+  display: block;
+  width: 100%;
+  max-width: 24rem;
+  border: 1px solid #aab3c2;
+  border-radius: 0.3rem;
+  padding: 0.75rem;
+  font: inherit;
+  color: #202b44;
+  background: white;
+}
+
+.refund-form input:focus-visible {
+  outline: 2px solid #346ad3;
+  outline-offset: 2px;
+}
+
+.refund-form small,
+.refund-notice {
+  display: block;
+  margin-top: 0.65rem;
+  color: #566176;
+  font-size: 0.85rem;
+}
+
+.refund-summary dt {
+  font-size: 0.82rem;
+  color: #566176;
+}
+
+.refund-summary dd {
+  margin: 0.3rem 0 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}

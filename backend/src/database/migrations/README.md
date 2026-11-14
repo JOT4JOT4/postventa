@@ -51,3 +51,7 @@ IDs de casos antiguos con los de las tablas compartidas.
 ## Recuperación de historial inicial
 
 `1793088000000-BackfillInitialHistory.ts` agrega una entrada inicial solo a casos que no la tengan. `up(runner)` usa fecha y estado inicial de registro cuando existe `postventa_registro`. En registros sin metadatos, conserva el estado conocido y señala que no existe fecha inicial disponible. No modifica estados, notas existentes ni resoluciones. `down()` requiere conciliación manual para no borrar trazabilidad.
+
+## Registro de reembolsos — HU-10
+
+`1794652800000-CreateRefundRequests.ts`: `up(runner)` crea `reembolso` con ID generado, FK a `reclamo`, monto NUMERIC(15,2) positivo, estado inicial Pendiente, fecha con zona y UNIQUE por caso. No altera las tablas previas. `down()` exige conciliación manual para no borrar solicitudes.

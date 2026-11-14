@@ -12,3 +12,5 @@ y persiste RECLAMO, metadatos y productos dentro de una transacción, volviendo 
 verificar la venta en la misma conexión antes de guardar.
 
 - `positive-id.pipe.ts`: `PositiveIdPipe.transform(value)` recibe un parámetro de ruta de texto o numérico y devuelve un entero entre 1 y 2147483647. Rechaza valores fuera de rango con 400 antes de invocar los servicios. Lo comparten los controladores de compras y casos; depende de las interfaces y excepciones de NestJS.
+
+- `refunds/`: registro y consulta de solicitudes de reembolso HU-10, importado por `AppModule`; documentación de API, reglas y archivos en su README.

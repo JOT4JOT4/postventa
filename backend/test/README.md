@@ -16,3 +16,5 @@ en PostgreSQL. No se conecta al ERP real del curso durante estas verificaciones.
 
 - `database/`: verificación de la carga de datos ficticios y protección del destino local.
 - `cases/README.md`: detalla las regresiones de evaluación, concurrencia y errores.
+
+- `refunds/`: pruebas HTTP, persistencia, concurrencia, flujo integrado local y errores de HU-10. Ver el README de esa carpeta.

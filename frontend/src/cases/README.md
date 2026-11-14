@@ -38,3 +38,5 @@ Este módulo implementa la interfaz de usuario para la visualización, gestión 
 - `case-responsive.css`: adaptación de columnas y espaciados a pantallas pequeñas.
 
 Todos los componentes devuelven elementos React; sus datos provienen de los contratos de `case-api.ts`. La API valida nuevamente las reglas aunque se omita el formulario.
+
+`CaseManagement` también monta `RefundSection` de `../refunds/` con el ID y estado del caso. La sección consulta solo a petición del usuario y no modifica el flujo existente de evaluación, estados o resolución.
