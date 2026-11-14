@@ -1,6 +1,6 @@
 .return-card button {
   padding: 0.7rem 1rem;
-  border-radius: 0.3rem;
+  border-radius: var(--radius-control);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
@@ -13,7 +13,7 @@
 
 .return-card button:focus-visible,
 .return-form input:focus-visible {
-  outline: 2px solid #346ad3;
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 
@@ -31,11 +31,11 @@
 .return-form input {
   display: block;
   width: 100%;
-  border: 1px solid #aab3c2;
-  border-radius: 0.3rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-control);
   padding: 0.75rem;
   font: inherit;
-  color: #202b44;
+  color: var(--text-main);
   background: white;
 }
 
@@ -44,7 +44,7 @@
 .return-summary dt {
   display: block;
   margin-top: 0.65rem;
-  color: #566176;
+  color: var(--text-body);
   font-size: 0.85rem;
 }
 

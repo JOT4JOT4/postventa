@@ -10,7 +10,7 @@
 
   Escucha `hashchange`, por lo que atrás/adelante del navegador funcionan. Los enlaces
   anteriores `?caseId=N` se reemplazan al cargar por `#/casos/N`.
-- `index.css`: estilos originales de Tailwind y tipografía base.
+- `index.css`: directivas de Tailwind, importación de tokens/controles LesGo, tipografía, modo claro y estructura base.
 - `vite-env.d.ts`: tipos de Vite para la configuración pública `import.meta.env`.
 - `requests/`: formulario, estado, llamadas HTTP y estilos propios de HU-01.
 - `cases/`: gestión (HU-04) y consulta (HU-12) de casos.
@@ -18,3 +18,6 @@
 - `refunds/`: sección de registro/consulta de reembolsos HU-10, montada desde el detalle de casos; cliente API, hook y estilos propios.
 
 - `returns/`: interfaz HU-06 de registro/consulta de devoluciones, productos, cantidades, fecha y motivo; se monta en el detalle de casos.
+
+- `layout/`: cabecera única LesGo, navegación existente y acceso por teclado al contenido; la monta `App`.
+- `styles/`: tokens y controles compartidos; ver su README para referencias de diseño, fuentes y alcance. `index.css` usa modo claro, fondo y tipografía comunes. Las vistas exponen `main-content` para el salto accesible desde la cabecera.

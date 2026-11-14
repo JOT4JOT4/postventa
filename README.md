@@ -140,3 +140,7 @@ API GET/POST `/postventa/solicitudes/:id/devoluciones`. POST: `{"purchaseItemId"
 La nueva migración crea solo `devolucion` y debe aplicarse antes de usar la API. La fuente local de compras añade cantidades ficticias para probar la validación. No se migró la base oficial ni se implementaron contratos de recepción física, bodega o movimientos con Inventario/Logística.
 
 Pruebas específicas: `npm test --prefix backend -- --runInBand test/returns` y `npm test --prefix frontend -- --run test/returns.test.tsx test/return-validation.test.ts`. Las pruebas de base requieren el destino local exclusivo descrito anteriormente.
+
+## Identidad visual
+
+La interfaz de Postventa utiliza la marca LesGo, cabecera roja con remate de bloques, logotipo amarillo, fuentes y controles coherentes con E-commerce y Compras. Incluye registro, listado, gestión de casos, devoluciones y reembolsos. La navegación y las funciones existentes se conservan. Ver `frontend/src/layout/README.md` y `frontend/src/styles/README.md` para componentes, tokens y comportamiento adaptable.

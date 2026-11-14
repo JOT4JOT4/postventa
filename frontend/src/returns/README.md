@@ -14,3 +14,5 @@ Se monta desde el detalle de casos existente. La consulta es explícita con Cons
 El backend vuelve a validar las reglas y deriva cliente, compra y producto. El navegador no decide esos vínculos. El registro no modifica el estado del caso ni acredita recepción en bodega o actualización de stock.
 
 Pruebas en `frontend/test/returns.test.tsx` y `return-validation.test.ts`. Los errores por registro concurrente permiten Actualizar devolución y recuperar lo persistido.
+
+`return.css` utiliza los tokens LesGo para colores, radios y foco; los botones comparten `../styles/controls.css`. El cambio visual conserva campos, validaciones y llamadas de esta historia.
