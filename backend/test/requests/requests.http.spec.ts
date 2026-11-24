@@ -2,6 +2,9 @@ import { INestApplication, ServiceUnavailableException, ValidationPipe } from '@
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
+import { AuthGuard } from '../../src/auth/auth.guard';
+import { RolesGuard } from '../../src/auth/roles.guard';
+import { authenticatedTestProviders, installAuthenticatedTestSession } from '../auth/authenticated-test-session';
 import { PurchaseGateway } from '../../src/requests/request.types';
 import { RequestsController } from '../../src/requests/requests.controller';
 import { RequestsService } from '../../src/requests/requests.service';
@@ -22,10 +25,14 @@ describe('HU-01: contrato HTTP de registro', () => {
     const module = await Test.createTestingModule({
       controllers: [RequestsController],
       providers: [RequestsService,
+        AuthGuard,
+        RolesGuard,
+        ...authenticatedTestProviders,
         { provide: PurchaseGateway, useValue: gateway },
         { provide: DataSource, useValue: { transaction } }],
     }).compile();
     app = module.createNestApplication();
+    installAuthenticatedTestSession(app);
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
     await app.init();
   });

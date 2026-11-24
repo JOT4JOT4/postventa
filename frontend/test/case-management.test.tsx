@@ -43,7 +43,7 @@ describe('HU-04: vista de gestión de reclamos (CaseManagement)', () => {
       .mockResolvedValueOnce(response(mockCase))
       .mockResolvedValueOnce(response(mockHistory));
 
-    render(<CaseManagement caseId={101} />);
+    render(<CaseManagement caseId={101} canManage />);
 
     expect(screen.getByText(/Cargando información del caso #101/)).toBeInTheDocument();
 
@@ -81,7 +81,7 @@ describe('HU-04: vista de gestión de reclamos (CaseManagement)', () => {
       .mockResolvedValueOnce(response(updatedCase)) // updateStatus PATCH
       .mockResolvedValueOnce(response(updatedHistory)); // getHistory reload
 
-    render(<CaseManagement caseId={101} />);
+    render(<CaseManagement caseId={101} canManage />);
     await screen.findByRole('heading', { level: 1, name: 'Caso #101' });
 
     const user = userEvent.setup();
@@ -122,7 +122,7 @@ describe('HU-04: vista de gestión de reclamos (CaseManagement)', () => {
       .mockResolvedValueOnce(response(closedCase))
       .mockResolvedValueOnce(response(mockHistory));
 
-    render(<CaseManagement caseId={101} />);
+    render(<CaseManagement caseId={101} canManage />);
     await screen.findByRole('heading', { level: 1, name: 'Caso #101' });
 
     expect(screen.getByText(/El caso se encuentra en estado terminal/)).toBeInTheDocument();
@@ -147,7 +147,7 @@ describe('HU-04: vista de gestión de reclamos (CaseManagement)', () => {
         }),
       ); // resolveCase POST
 
-    render(<CaseManagement caseId={101} />);
+    render(<CaseManagement caseId={101} canManage />);
     await screen.findByRole('heading', { level: 1, name: 'Caso #101' });
 
     const user = userEvent.setup();
@@ -186,6 +186,20 @@ describe('HU-04: vista de gestión de reclamos (CaseManagement)', () => {
     render(<CaseManagement caseId={999} />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent('El caso indicado no existe.');
+  });
+
+  it('muestra los datos en solo lectura para Operador', async () => {
+    fetchMock
+      .mockResolvedValueOnce(response(mockCase))
+      .mockResolvedValueOnce(response(mockHistory));
+
+    render(<CaseManagement caseId={101} />);
+
+    await screen.findByRole('heading', { level: 1, name: 'Caso #101' });
+    expect(screen.getByText('El cliente reportó que falta el cable de alimentación.')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Descripción del reclamo')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Nuevo estado')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Texto de resolución final')).not.toBeInTheDocument();
   });
 
   it('no inventa un tipo cuando el caso no lo tiene registrado (HU-12)', async () => {

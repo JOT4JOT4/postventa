@@ -2,8 +2,11 @@ import { INestApplication, ServiceUnavailableException, ValidationPipe } from '@
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
+import { AuthGuard } from '../../src/auth/auth.guard';
 import { CasesController } from '../../src/cases/cases.controller';
 import { CasesService } from '../../src/cases/cases.service';
+import { RolesGuard } from '../../src/auth/roles.guard';
+import { authenticatedTestProviders, installAuthenticatedTestSession } from '../auth/authenticated-test-session';
 
 const SUMMARIES = [
   { id: 2, type: 'Cambio', status: 'En revisión', createdAt: '2026-10-25T10:00:00.000Z', purchaseId: 11, customerId: 21 },
@@ -19,10 +22,14 @@ describe('HU-12: contrato HTTP del listado de casos', () => {
       controllers: [CasesController],
       providers: [
         { provide: CasesService, useValue: service },
+        AuthGuard,
+        RolesGuard,
+        ...authenticatedTestProviders,
         { provide: DataSource, useValue: {} },
       ],
     }).compile();
     app = module.createNestApplication();
+    installAuthenticatedTestSession(app);
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
     await app.init();
   });

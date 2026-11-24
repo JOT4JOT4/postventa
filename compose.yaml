@@ -21,6 +21,9 @@ services:
       DATABASE_NAME: postventa
       DATABASE_USER: postventa
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en el archivo .env}
+      SSO_JWT_SECRET: ${SSO_JWT_SECRET:?Define SSO_JWT_SECRET en el archivo .env}
+      SSO_JWT_ISSUER: ${SSO_JWT_ISSUER:-}
+      SSO_JWT_AUDIENCE: ${SSO_JWT_AUDIENCE:-}
       FRONTEND_ORIGIN: http://localhost:${POSTVENTA_WEB_PORT:-5173}
       PORT: 3000
     command: ["sh", "-c", "node node_modules/typeorm/cli.js migration:run -d dist/database/data-source.js && node dist/main.js"]

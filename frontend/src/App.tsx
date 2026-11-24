@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { AuthenticatedUser, closeSession, initializeSession } from './auth/auth-api';
 import { CaseList } from './cases/CaseList';
 import { CaseManagement } from './cases/CaseManagement';
 import { RegistrationForm } from './requests/RegistrationForm';
@@ -44,12 +45,70 @@ function navigate(hash: string) {
 
 function App() {
   const [route, setRoute] = useState<Route>(initialRoute);
+  const [user, setUser] = useState<AuthenticatedUser | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const sessionPromise = useRef<Promise<AuthenticatedUser> | null>(null);
 
   useEffect(() => {
     const onHashChange = () => setRoute(parseRoute(window.location.hash));
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    sessionPromise.current ??= initializeSession();
+    void sessionPromise.current.then(
+      (authenticatedUser) => {
+        if (active) {
+          setUser(authenticatedUser);
+          setAuthLoading(false);
+        }
+      },
+      (error: unknown) => {
+        if (active) {
+          setAuthError(error instanceof Error ? error.message : 'No fue posible validar el acceso.');
+          setAuthLoading(false);
+        }
+      },
+    );
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const logout = async () => {
+    try {
+      await closeSession();
+      setUser(null);
+      setAuthError('Sesión cerrada. Inicia sesión desde el módulo principal para volver a entrar.');
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : 'No fue posible cerrar la sesión.');
+    }
+  };
+
+  if (authLoading) {
+    return (
+      <main className="postventa-page">
+        <header className="module-header"><strong>mini-ERP <span>/</span> Postventa</strong></header>
+        <p className="mx-auto max-w-xl px-6 py-12 text-center" role="status">Validando acceso…</p>
+      </main>
+    );
+  }
+
+  if (!user) {
+    return (
+      <main className="postventa-page">
+        <header className="module-header"><strong>mini-ERP <span>/</span> Postventa</strong></header>
+        <section className="mx-auto max-w-xl px-6 py-12 text-center" role="alert">
+          <h1 className="mb-3 text-2xl font-bold">Acceso a Postventa</h1>
+          <p>{authError ?? 'Inicia sesión desde el módulo principal y vuelve a entrar mediante el enlace de Postventa.'}</p>
+          {authError && <p className="mt-3">Inicia sesión desde el módulo principal y vuelve a entrar mediante el enlace de Postventa.</p>}
+        </section>
+      </main>
+    );
+  }
 
   const section = route.name === 'registration' ? 'registration' : route.name === 'not-found' ? null : 'cases';
   const linkClass = (active: boolean) =>
@@ -68,13 +127,21 @@ function App() {
           aria-current={section === 'cases' ? 'page' : undefined}>
           Casos
         </a>
+        <span className="ml-auto self-center text-[#d8deea]" aria-label="Usuario autenticado">
+          {user.name} · {user.role}
+        </span>
+        <button type="button" className={linkClass(false)} onClick={() => void logout()}>
+          Salir
+        </button>
       </nav>
+      {authError && <p className="bg-red-50 px-[5vw] py-2 text-sm text-red-800" role="alert">{authError}</p>}
       {route.name === 'registration' && (
         <RegistrationForm onNavigateToCase={(id) => navigate(`#/casos/${id}`)} />
       )}
       {route.name === 'cases' && <CaseList />}
       {route.name === 'case' && (
-        <CaseManagement key={route.id} caseId={route.id} onBack={() => navigate('#/casos')} />
+        <CaseManagement key={route.id} caseId={route.id} canManage={user.role !== 'Operador'}
+          onBack={() => navigate('#/casos')} />
       )}
       {route.name === 'not-found' && (
         <main className="postventa-page">

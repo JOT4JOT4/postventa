@@ -2,9 +2,12 @@ import { ConflictException, INestApplication, NotFoundException, ServiceUnavaila
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
+import { AuthGuard } from '../../src/auth/auth.guard';
 import { CasesController } from '../../src/cases/cases.controller';
 import { CasesService } from '../../src/cases/cases.service';
 import { CaseStatus } from '../../src/cases/case.types';
+import { RolesGuard } from '../../src/auth/roles.guard';
+import { authenticatedTestProviders, installAuthenticatedTestSession } from '../auth/authenticated-test-session';
 
 const BASE_CASE = {
   id: 1, purchaseId: 10, customerId: 20, reason: 'Faltan piezas.',
@@ -26,10 +29,14 @@ describe('HU-04: contrato HTTP de gestión de reclamos', () => {
       controllers: [CasesController],
       providers: [
         { provide: CasesService, useValue: service },
+        AuthGuard,
+        RolesGuard,
+        ...authenticatedTestProviders,
         { provide: DataSource, useValue: {} },
       ],
     }).compile();
     app = module.createNestApplication();
+    installAuthenticatedTestSession(app);
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
     await app.init();
   });

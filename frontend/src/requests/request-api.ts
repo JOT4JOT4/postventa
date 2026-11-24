@@ -26,7 +26,10 @@ const apiUrl = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000').re
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(`${apiUrl}/postventa/${path}`, options);
+    response = await fetch(`${apiUrl}/postventa/${path}`, {
+      ...options,
+      credentials: 'include',
+    });
   } catch {
     throw new Error('No se pudo conectar con el servidor. Verifica tu conexión e inténtalo nuevamente.');
   }

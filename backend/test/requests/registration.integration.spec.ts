@@ -2,6 +2,9 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
+import { AuthGuard } from '../../src/auth/auth.guard';
+import { RolesGuard } from '../../src/auth/roles.guard';
+import { authenticatedTestProviders, installAuthenticatedTestSession } from '../auth/authenticated-test-session';
 import { DatabasePurchaseGateway } from '../../src/requests/database-purchase.gateway';
 import { PurchaseGateway } from '../../src/requests/request.types';
 import { RequestsController } from '../../src/requests/requests.controller';
@@ -20,10 +23,14 @@ databaseSuite('HU-01: HTTP y PostgreSQL con el esquema compartido', () => {
     const module = await Test.createTestingModule({
       controllers: [RequestsController],
       providers: [RequestsService,
+        AuthGuard,
+        RolesGuard,
+        ...authenticatedTestProviders,
         { provide: DataSource, useValue: db },
         { provide: PurchaseGateway, useValue: new DatabasePurchaseGateway(db) }],
     }).compile();
     app = module.createNestApplication();
+    installAuthenticatedTestSession(app);
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
     await app.init();
   });

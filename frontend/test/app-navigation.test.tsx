@@ -15,8 +15,13 @@ const detail = (id: number): CaseDetail => ({
 
 const response = (body: unknown, ok = true) => ({ ok, json: async () => body });
 
-const fetchMock = vi.fn(async (url: string) => {
+let userRole: 'Administrador' | 'Coordinador' | 'Operador' = 'Administrador';
+const fetchMock = vi.fn(async (url: string, _options?: RequestInit) => {
+  void _options;
   const path = new URL(url).pathname;
+  if (path === '/auth/me' || path === '/auth/session') {
+    return response({ id: 'user-123', name: 'Usuario de prueba', role: userRole });
+  }
   if (path === '/postventa/solicitudes') return response(summaries);
   const historyMatch = /^\/postventa\/solicitudes\/(\d+)\/historial$/.exec(path);
   if (historyMatch) return response([]);
@@ -33,20 +38,21 @@ function openAt(url: string) {
 }
 
 beforeEach(() => {
+  userRole = 'Administrador';
   vi.stubGlobal('fetch', fetchMock);
   fetchMock.mockClear();
 });
 
 describe('HU-12: navegación por hash (App)', () => {
-  it('mantiene el formulario de registro como página de inicio', () => {
+  it('mantiene el formulario de registro como página de inicio', async () => {
     openAt('/');
-    expect(screen.getByRole('heading', { level: 1, name: 'Registrar solicitud' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Registrar solicitud' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Registrar solicitud' })).toHaveAttribute('aria-current', 'page');
-    expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('ofrece enlaces a ambas secciones', () => {
+  it('ofrece enlaces a ambas secciones después de validar la sesión', async () => {
     openAt('/');
+    await screen.findByRole('heading', { level: 1, name: 'Registrar solicitud' });
     const nav = screen.getByRole('navigation', { name: 'Secciones de Postventa' });
     expect(nav).toContainElement(screen.getByRole('link', { name: 'Casos' }));
     expect(screen.getByRole('link', { name: 'Casos' })).toHaveAttribute('href', '#/casos');
@@ -84,12 +90,21 @@ describe('HU-12: navegación por hash (App)', () => {
     expect(window.location.hash).toBe('#/casos/5');
   });
 
+  it('consume el token firmado del enlace y lo elimina de la URL', async () => {
+    openAt('/?sso_token=token-de-prueba#/casos');
+    expect(await screen.findByRole('heading', { level: 1, name: 'Casos de Postventa' })).toBeInTheDocument();
+    expect(window.location.search).toBe('');
+    const sessionCall = fetchMock.mock.calls.find(([url]) => new URL(url).pathname === '/auth/session');
+    expect(sessionCall).toBeDefined();
+    expect(JSON.parse(sessionCall![1]?.body as string)).toEqual({ token: 'token-de-prueba' });
+  });
+
   it.each(['/#/casos/abc', '/#/casos/0', '/#/casos/2147483648', '/#/otra'])(
     'muestra "Página no encontrada" para %s sin consultar el backend',
     async (url) => {
       openAt(url);
-      expect(screen.getByRole('heading', { level: 1, name: 'Página no encontrada' })).toBeInTheDocument();
-      await waitFor(() => expect(fetchMock).not.toHaveBeenCalled());
+      expect(await screen.findByRole('heading', { level: 1, name: 'Página no encontrada' })).toBeInTheDocument();
+      await waitFor(() => expect(requestedPaths()).not.toContain('/postventa/solicitudes'));
     },
   );
 });

@@ -1,16 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 import { CasesModule } from './cases/cases.module';
 import { RequestsModule } from './requests/requests.module';
 
 @Module({
   imports: [
-    RequestsModule,
-    CasesModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    AuthModule,
+    RequestsModule,
+    CasesModule,
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({

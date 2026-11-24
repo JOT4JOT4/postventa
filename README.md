@@ -24,7 +24,8 @@ de inicio sigue siendo el formulario de registro. Sin paginación.
 
 ## Inicio con Docker (recomendado)
 
-1. Copiar `.env.example` a `.env` en la raíz y definir `POSTGRES_PASSWORD`.
+1. Copiar `.env.example` a `.env` en la raíz y definir `POSTGRES_PASSWORD` y
+   `SSO_JWT_SECRET` (secreto aleatorio de al menos 32 bytes compartido con el login).
 2. Iniciar la base con `docker compose up -d database`.
 3. Importar el SQL compartido aprobado (Ventas, CRM e Inventario) en esa base. No se incluye un sustituto de esos scripts.
 4. Ejecutar `docker compose up --build`.
@@ -34,7 +35,28 @@ de inicio sigue siendo el formulario de registro. Sin paginación.
 al equipo; las aplicaciones se publican solo en la interfaz local. Los datos se
 conservan en el volumen `postventa-data`. Detener con `docker compose down`, sin
 eliminar el volumen. No es una configuración de publicación ni de producción.
-La autenticación y permisos corresponden a otra historia y siguen pendientes.
+## Acceso desde el login unificado
+
+Postventa no crea credenciales locales. El módulo de login debe emitir un JWT
+firmado con HS256 y abrir Postventa con `?sso_token=<JWT>`. El token debe incluir
+`sub` (identificador de usuario), `role` (`Administrador`, `Coordinador` u
+`Operador`) y `exp`; `name` o `preferred_username` son opcionales. Puede incluir
+`iss` y `aud`, que se validan cuando `SSO_JWT_ISSUER` y `SSO_JWT_AUDIENCE` están
+configurados. El login debe emitir tokens de corta duración.
+
+Postventa valida la firma y los claims en el backend, intercambia el token por
+una cookie de sesión `HttpOnly` y elimina el token de la URL. El login y Postventa
+deben compartir el secreto HMAC (`SSO_JWT_SECRET`, mínimo 32 bytes), configurado
+por separado en cada módulo y nunca expuesto al frontend. En Docker se define en
+el `.env` raíz. Para despliegues entre sitios distintos, servir por HTTPS y establecer
+`NODE_ENV=production` para usar la cookie segura `SameSite=None`.
+
+Los tres roles pueden consultar compras/casos y registrar solicitudes.
+`Coordinador` y `Administrador` también pueden modificar estados, descripciones
+y resoluciones; `Operador` tiene acceso de solo lectura a la gestión de casos.
+Estas reglas se aplican en el backend además de ocultar los controles no
+permitidos en la interfaz. No hay administración de usuarios ni contraseñas en
+Postventa.
 Los puertos se pueden cambiar con `POSTVENTA_API_PORT` y `POSTVENTA_WEB_PORT` en
 el `.env` raíz. Docker usa 3001 para evitar el servicio que ya ocupa el 3000;
 las URLs y CORS se ajustan conjuntamente. La ejecución local sin Docker conserva 3000.
@@ -53,7 +75,8 @@ npm install --prefix frontend
 ```
 
 Copiar los archivos `.env.example` como `.env` en cada aplicación y ajustar sus
-valores locales. No se deben versionar archivos `.env`.
+valores locales. El backend local también requiere `SSO_JWT_SECRET`, igual al del
+login unificado. No se deben versionar archivos `.env`.
 
 ## Desarrollo
 

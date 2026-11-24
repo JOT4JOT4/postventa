@@ -2,8 +2,11 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
+import { AuthGuard } from '../../src/auth/auth.guard';
 import { CasesController } from '../../src/cases/cases.controller';
 import { CasesService } from '../../src/cases/cases.service';
+import { RolesGuard } from '../../src/auth/roles.guard';
+import { authenticatedTestProviders, installAuthenticatedTestSession } from '../auth/authenticated-test-session';
 import { databaseSuite, openTestDatabase, closeTestDatabase } from '../requests/database-fixture';
 import { createSharedFixture } from '../requests/shared-schema.fixture';
 
@@ -17,9 +20,16 @@ databaseSuite('HU-12: consulta de casos mediante HTTP y PostgreSQL', () => {
     await db.runMigrations();
     const module = await Test.createTestingModule({
       controllers: [CasesController],
-      providers: [CasesService, { provide: DataSource, useValue: db }],
+      providers: [
+        CasesService,
+        AuthGuard,
+        RolesGuard,
+        ...authenticatedTestProviders,
+        { provide: DataSource, useValue: db },
+      ],
     }).compile();
     app = module.createNestApplication();
+    installAuthenticatedTestSession(app);
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
     await app.init();
   });

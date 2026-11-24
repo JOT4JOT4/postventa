@@ -6,10 +6,11 @@ import './case-management.css';
 
 interface CaseManagementProps {
   caseId: number;
+  canManage?: boolean;
   onBack?: () => void;
 }
 
-export function CaseManagement({ caseId, onBack }: CaseManagementProps) {
+export function CaseManagement({ caseId, canManage = false, onBack }: CaseManagementProps) {
   const {
     caseDetail,
     history,
@@ -159,21 +160,27 @@ export function CaseManagement({ caseId, onBack }: CaseManagementProps) {
                 <span>02</span> Detalle del problema reportado
               </h2>
               <p className="section-desc">
-                Complementa o edita la descripción del reclamo proporcionada por el cliente.
+                {canManage
+                  ? 'Complementa o edita la descripción del reclamo proporcionada por el cliente.'
+                  : 'Descripción complementaria registrada para este caso.'}
               </p>
-              <div className="field-group">
-                <label htmlFor="case-description">Descripción del reclamo</label>
-                <textarea
-                  id="case-description"
-                  rows={4}
-                  maxLength={4000}
-                  disabled={busy || isTerminal}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Escribe el detalle completo de la falla, reclamo o problema informado…"
-                />
-                <p className="char-count">{description.length}/4000 caracteres</p>
-              </div>
+              {canManage ? (
+                <div className="field-group">
+                  <label htmlFor="case-description">Descripción del reclamo</label>
+                  <textarea
+                    id="case-description"
+                    rows={4}
+                    maxLength={4000}
+                    disabled={busy || isTerminal}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Escribe el detalle completo de la falla, reclamo o problema informado…"
+                  />
+                  <p className="char-count">{description.length}/4000 caracteres</p>
+                </div>
+              ) : (
+                <p className="info-value reason-box">{caseDetail.description || 'Sin descripción adicional.'}</p>
+              )}
             </section>
 
             {/* 3. Gestión del Estado */}
@@ -181,7 +188,9 @@ export function CaseManagement({ caseId, onBack }: CaseManagementProps) {
               <h2 id="status-management-heading" className="card-title">
                 <span>03</span> Actualización de estado
               </h2>
-              {isTerminal ? (
+              {!canManage ? (
+                <p className="resolution-locked-note">Tu rol permite consultar el caso, pero no modificar su estado.</p>
+              ) : isTerminal ? (
                 <div className="terminal-status-notice">
                   <p>
                     El caso se encuentra en estado terminal <strong>{caseDetail.status}</strong>.
@@ -261,6 +270,8 @@ export function CaseManagement({ caseId, onBack }: CaseManagementProps) {
                   </div>
                   <p className="resolution-text">{caseDetail.resolution.text}</p>
                 </div>
+              ) : !canManage ? (
+                <p className="resolution-locked-note">Tu rol no permite registrar una resolución.</p>
               ) : isTerminal ? (
                 <form
                   onSubmit={(e) => {

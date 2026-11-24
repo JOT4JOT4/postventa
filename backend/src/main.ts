@@ -8,6 +8,7 @@ async function bootstrap(): Promise<void> {
 
   app.enableCors({
     origin: frontendOrigin,
+    credentials: true,
   });
   app.useGlobalPipes(
     new ValidationPipe({
