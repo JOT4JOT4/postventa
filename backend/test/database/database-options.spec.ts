@@ -1,4 +1,5 @@
 import { databaseOptions } from '../../src/database/database-options';
+import { parseSchemaName, qualifyTable } from '../../src/database/schema-config';
 
 const environment = {
   DATABASE_HOST: 'localhost', DATABASE_NAME: 'postventa',
@@ -34,5 +35,17 @@ describe('Configuración PostgreSQL compartida por aplicación y migraciones', (
 
   it('rechaza SSL ambiguo sin mostrar valores privados', () => {
     expect(() => options({ DATABASE_SSL: 'valor-privado' })).toThrow('DATABASE_SSL debe ser true o false.');
+  });
+
+  it('acepta DATABASE_SCHEMA opcional y rechaza identificadores inválidos', () => {
+    expect(options().schema).toBeUndefined();
+    expect(options({ DATABASE_SCHEMA: 'postventa' }).schema).toBe('postventa');
+    expect(() => options({ DATABASE_SCHEMA: 'Postventa; DROP TABLE x' })).toThrow('DATABASE_SCHEMA');
+  });
+
+  it('califica tablas externas solo cuando se indica un esquema válido', () => {
+    expect(qualifyTable('inv_bodegas', parseSchemaName('', 'INVENTORY_SCHEMA'))).toBe('inv_bodegas');
+    expect(qualifyTable('inv_bodegas', parseSchemaName('inventario', 'INVENTORY_SCHEMA')))
+      .toBe('inventario.inv_bodegas');
   });
 });

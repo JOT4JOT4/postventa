@@ -1,4 +1,5 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { parseSchemaName } from './schema-config';
 
 type EnvironmentReader = (name: string) => unknown;
 
@@ -21,6 +22,7 @@ export function databaseOptions(read: EnvironmentReader): PostgresConnectionOpti
   if (!['true', 'false'].includes(ssl)) {
     throw new Error('DATABASE_SSL debe ser true o false.');
   }
+  const schema = parseSchemaName(read('DATABASE_SCHEMA'), 'DATABASE_SCHEMA');
   return {
     type: 'postgres',
     host,
@@ -28,6 +30,7 @@ export function databaseOptions(read: EnvironmentReader): PostgresConnectionOpti
     database: requiredValue(read, 'DATABASE_NAME'),
     username: requiredValue(read, 'DATABASE_USER'),
     password: requiredValue(read, 'DATABASE_PASSWORD'),
+    ...(schema ? { schema } : {}),
     ssl: ssl === 'true' ? { rejectUnauthorized: true } : false,
     synchronize: false,
   };
