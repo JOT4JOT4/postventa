@@ -17,7 +17,11 @@ databaseSuite('HU-06: datos y referencias de devoluciones en PostgreSQL', () => 
     await db.runMigrations();
     service = new ReturnsService(db);
   });
-  beforeEach(async () => { await db.query('DELETE FROM devolucion'); });
+  beforeEach(async () => {
+    await db.query('DELETE FROM inv_detalles_movimiento');
+    await db.query('DELETE FROM inv_movimiento');
+    await db.query('DELETE FROM devolucion');
+  });
   afterEach(() => jest.restoreAllMocks());
   afterAll(async () => closeTestDatabase(db));
 
@@ -95,5 +99,49 @@ databaseSuite('HU-06: datos y referencias de devoluciones en PostgreSQL', () => 
     await service.create(caseId, returnInput);
     expect(await db.runMigrations()).toEqual([]);
     expect((await service.findForCase(caseId)).returns).toHaveLength(1);
+  });
+
+  it('expone bodega de envío y refleja los tres estados de recepción desde Inventario', async () => {
+    const caseId = await createReturnCase(db);
+    const beforeReturn = await service.findForCase(caseId);
+    expect(beforeReturn.warehouse).toEqual({
+      id: 1, name: 'Bodega Central', address: 'Dirección ficticia de bodega',
+    });
+    expect(beforeReturn.reception).toBeNull();
+
+    const record = await service.create(caseId, returnInput);
+    const pending = await service.findForCase(caseId);
+    expect(pending.reception?.status).toBe('Pendiente de recepción');
+
+    const [devMov] = await db.query(
+      `INSERT INTO inv_movimiento(id_empleado, id_pedido, id_devolucion, tipo_operacion, estado)
+       VALUES (1, 100, $1, 'DEVOLUCION', 'COMPLETADO') RETURNING id_movimiento`,
+      [record.id],
+    );
+    await db.query(
+      `INSERT INTO inv_detalles_movimiento(id_movimiento, id_producto, id_bodega, cantidad)
+       VALUES ($1, 40, 1, 1)`,
+      [devMov.id_movimiento],
+    );
+    const apt = await service.findForCase(caseId);
+    expect(apt.reception).toMatchObject({
+      status: 'Recibida apta', warehouseId: 1, warehouseName: 'Bodega Central', quantity: 1,
+    });
+
+    const [adjMov] = await db.query(
+      `INSERT INTO inv_movimiento(id_empleado, id_pedido, id_devolucion, tipo_operacion, estado)
+       VALUES (1, 100, $1, 'AJUSTE', 'COMPLETADO') RETURNING id_movimiento`,
+      [record.id],
+    );
+    await db.query(
+      `INSERT INTO inv_detalles_movimiento(id_movimiento, id_producto, id_bodega, cantidad)
+       VALUES ($1, 40, 1, -1)`,
+      [adjMov.id_movimiento],
+    );
+    const damaged = await service.findForCase(caseId);
+    expect(damaged.reception).toMatchObject({
+      status: 'Recibida con daño', warehouseId: 1, warehouseName: 'Bodega Central', quantity: 1,
+    });
+    expect(damaged.reception?.movements).toHaveLength(2);
   });
 });

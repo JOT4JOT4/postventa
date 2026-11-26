@@ -1,17 +1,25 @@
 import {
   BadRequestException, ConflictException, HttpException, Injectable,
-  NotFoundException, ServiceUnavailableException,
+  NotFoundException, Optional, ServiceUnavailableException,
 } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { RequestEntity } from '../requests/request.entity';
 import { CaseStatus } from '../cases/case.types';
 import { CreateReturnDto } from './create-return.dto';
+import { DatabaseInventoryReturnGateway, InventoryReturnGateway } from './inventory-return.gateway';
 import { ReturnEntity } from './return.entity';
 import { readReturnProducts, readReturns } from './return-reader';
 
 @Injectable()
 export class ReturnsService {
-  constructor(private readonly db: DataSource) {}
+  private readonly inventory: InventoryReturnGateway;
+
+  constructor(
+    private readonly db: DataSource,
+    @Optional() inventory?: InventoryReturnGateway,
+  ) {
+    this.inventory = inventory ?? new DatabaseInventoryReturnGateway(db);
+  }
 
   private async operation<T>(action: () => Promise<T>): Promise<T> {
     try { return await action(); }
@@ -26,10 +34,15 @@ export class ReturnsService {
       if (!await this.db.manager.exists(RequestEntity, { where: { id: caseId } })) {
         throw new NotFoundException('El caso indicado no existe.');
       }
-      const [returns, products] = await Promise.all([
-        readReturns(this.db.manager, caseId), readReturnProducts(this.db.manager, caseId),
+      const [returns, products, warehouse] = await Promise.all([
+        readReturns(this.db.manager, caseId),
+        readReturnProducts(this.db.manager, caseId),
+        this.inventory.findReturnWarehouse(this.db.manager),
       ]);
-      return { returns, products };
+      const reception = returns[0]
+        ? await this.inventory.findReceptionByReturnId(returns[0].id, this.db.manager)
+        : null;
+      return { returns, products, warehouse, reception };
     });
   }
 
