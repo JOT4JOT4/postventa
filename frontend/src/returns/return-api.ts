@@ -9,11 +9,41 @@ export interface ReturnProduct {
   purchasedQuantity: number; availableQuantity: number;
 }
 
+export type ReceptionStatus = 'Pendiente de recepción' | 'Recibida apta' | 'Recibida con daño';
+
+export interface ReturnWarehouse {
+  id: number;
+  name: string;
+  address: string;
+}
+
+export interface InventoryReturnMovement {
+  operationType: string;
+  recordedAt: string;
+  warehouseId: number;
+  warehouseName: string | null;
+  quantity: number;
+}
+
+export interface ReturnReception {
+  status: ReceptionStatus;
+  warehouseId: number | null;
+  warehouseName: string | null;
+  quantity: number | null;
+  recordedAt: string | null;
+  movements: InventoryReturnMovement[];
+}
+
 export interface ReturnInput {
   purchaseItemId: number; quantity: number; returnDate: string; reason: string;
 }
 
-export interface ReturnData { returns: ProductReturn[]; products: ReturnProduct[] }
+export interface ReturnData {
+  returns: ProductReturn[];
+  products: ReturnProduct[];
+  warehouse?: ReturnWarehouse | null;
+  reception?: ReturnReception | null;
+}
 
 const apiUrl = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 

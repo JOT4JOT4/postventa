@@ -1,11 +1,22 @@
 import { useRef, useState } from 'react';
 import { createReturn, getReturns } from './return-api';
-import type { ProductReturn, ReturnProduct } from './return-api';
+import type { ProductReturn, ReturnProduct, ReturnReception, ReturnWarehouse } from './return-api';
 import { isReturnDate, today } from './return-validation';
+
+const PENDING_RECEPTION: ReturnReception = {
+  status: 'Pendiente de recepción',
+  warehouseId: null,
+  warehouseName: null,
+  quantity: null,
+  recordedAt: null,
+  movements: [],
+};
 
 export function useReturn(caseId: number) {
   const [record, setRecord] = useState<ProductReturn | null>(null);
   const [products, setProducts] = useState<ReturnProduct[]>([]);
+  const [warehouse, setWarehouse] = useState<ReturnWarehouse | null>(null);
+  const [reception, setReception] = useState<ReturnReception | null>(null);
   const [purchaseItemId, setPurchaseItemId] = useState('');
   const [quantity, setQuantity] = useState('');
   const [returnDate, setReturnDate] = useState(today);
@@ -31,6 +42,8 @@ export function useReturn(caseId: number) {
       const data = await getReturns(caseId);
       setRecord(data.returns[0] ?? null);
       setProducts(data.products);
+      setWarehouse(data.warehouse ?? null);
+      setReception(data.reception ?? null);
       setLoaded(true);
     });
   }
@@ -50,11 +63,19 @@ export function useReturn(caseId: number) {
       setError('El motivo debe contener entre 1 y 2000 caracteres.'); return;
     }
     return operation(async () => {
-      setRecord(await createReturn(caseId, { purchaseItemId: product.purchaseItemId,
-        quantity: Number(quantity), returnDate, reason: reason.trim() }));
+      const created = await createReturn(caseId, {
+        purchaseItemId: product.purchaseItemId,
+        quantity: Number(quantity),
+        returnDate,
+        reason: reason.trim(),
+      });
+      setRecord(created);
+      setReception(PENDING_RECEPTION);
     });
   }
 
-  return { record, products, purchaseItemId, setPurchaseItemId, quantity, setQuantity,
-    returnDate, setReturnDate, reason, setReason, loaded, busy, error, load, submit };
+  return {
+    record, products, warehouse, reception, purchaseItemId, setPurchaseItemId, quantity, setQuantity,
+    returnDate, setReturnDate, reason, setReason, loaded, busy, error, load, submit,
+  };
 }

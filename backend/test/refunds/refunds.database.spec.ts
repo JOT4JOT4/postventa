@@ -106,4 +106,23 @@ databaseSuite('HU-10: persistencia, referencias y concurrencia de reembolsos', (
     expect(await db.runMigrations()).toEqual([]);
     expect(await db.query('SELECT count(*) FROM reclamo')).toEqual(before);
   });
+
+  it('bloquea reembolsos en casos de Cambio y exige devolución previa en casos de Devolución', async () => {
+    const exchangeCase = await caseWithStatus('Aprobado');
+    await db.query("INSERT INTO postventa_registro(id_reclamo, tipo) VALUES ($1, 'Cambio')", [exchangeCase]);
+    await expect(service.create(exchangeCase, { amount: '100' })).rejects.toMatchObject({ status: 400 });
+
+    const returnCase = await caseWithStatus('Aprobado');
+    await db.query("INSERT INTO postventa_registro(id_reclamo, tipo) VALUES ($1, 'Devolución')", [returnCase]);
+    await db.query('INSERT INTO postventa_registro_producto(id_reclamo, id_detalle_ped) VALUES ($1, 30)', [returnCase]);
+    await expect(service.create(returnCase, { amount: '100' })).rejects.toMatchObject({ status: 400 });
+
+    await db.query(
+      `INSERT INTO devolucion(id_reclamo, id_detalle_ped, id_producto, cantidad, fecha_devolucion, motivo)
+       VALUES ($1, 30, 40, 1, '2026-11-27', 'Retorno previo al reembolso')`,
+      [returnCase],
+    );
+    const refund = await service.create(returnCase, { amount: '100' });
+    expect(refund).toMatchObject({ caseId: returnCase, amount: '100.00', status: 'Pendiente' });
+  });
 });

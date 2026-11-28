@@ -144,4 +144,10 @@ databaseSuite('HU-06: datos y referencias de devoluciones en PostgreSQL', () => 
     });
     expect(damaged.reception?.movements).toHaveLength(2);
   });
+
+  it('rechaza registrar devolución física cuando el caso es de tipo Reembolso', async () => {
+    const caseId = await createReturnCase(db, 'Aprobado');
+    await db.query("INSERT INTO postventa_registro(id_reclamo, tipo) VALUES ($1, 'Reembolso')", [caseId]);
+    await expect(service.create(caseId, returnInput)).rejects.toMatchObject({ status: 400 });
+  });
 });

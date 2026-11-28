@@ -4,7 +4,11 @@ import {
 } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { RequestEntity } from '../requests/request.entity';
+import { RequestRegistrationEntity } from '../requests/request-registration.entity';
+import { RequestType } from '../requests/request.types';
+import { assertRefundAllowedForType } from '../cases/case-actions';
 import { CaseStatus } from '../cases/case.types';
+import { ReturnEntity } from '../returns/return.entity';
 import { CreateRefundDto } from './create-refund.dto';
 import { RefundEntity } from './refund.entity';
 import { readRefunds } from './refund-reader';
@@ -39,6 +43,11 @@ export class RefundsService {
       if (caseRecord.status !== CaseStatus.Approved) {
         throw new BadRequestException('Solo se puede solicitar un reembolso para un caso aprobado.');
       }
+      const registration = await manager.findOne(RequestRegistrationEntity, { where: { requestId: caseId } });
+      const hasReturn = registration?.type === RequestType.Return
+        ? await manager.exists(ReturnEntity, { where: { caseId } })
+        : false;
+      assertRefundAllowedForType(registration?.type ?? null, hasReturn);
       if (await manager.exists(RefundEntity, { where: { caseId } })) {
         throw new ConflictException('El caso ya tiene una solicitud de reembolso registrada.');
       }

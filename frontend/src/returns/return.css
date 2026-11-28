@@ -59,3 +59,54 @@
   overflow-wrap: anywhere;
   margin: 1.25rem 0 0;
 }
+
+.return-inventory-box,
+.return-reception {
+  margin-top: 1.1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-control);
+  background: var(--surface-subtle);
+}
+
+.return-inventory-box p,
+.return-reception-detail {
+  margin: 0.35rem 0 0;
+  color: var(--text-body);
+  font-size: 0.9rem;
+}
+
+.return-reception-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.return-badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.return-badge.pending {
+  background: var(--surface-muted);
+  color: var(--text-main);
+}
+
+.return-badge.apt {
+  background: #dcfce7;
+  color: var(--success);
+}
+
+.return-badge.damaged {
+  background: var(--lego-red-soft);
+  color: var(--danger);
+}
+
+.return-reception-meta {
+  margin-top: 0.75rem;
+}

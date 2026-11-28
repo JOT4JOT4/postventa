@@ -4,14 +4,23 @@ import './refund.css';
 interface Props {
   caseId: number;
   status: string;
+  stepNumber?: string;
+  requirement?: 'required' | 'optional';
 }
 
-export function RefundSection({ caseId, status }: Props) {
+export function RefundSection({ caseId, status, stepNumber = '06', requirement }: Props) {
   const form = useRefund(caseId);
   const approved = status === 'Aprobado';
   return (
     <section className="case-card refund-card" aria-labelledby="refund-heading" aria-busy={form.busy}>
-      <h2 id="refund-heading" className="card-title"><span>05</span> Solicitud de reembolso</h2>
+      <h2 id="refund-heading" className="card-title">
+        <span>{stepNumber}</span> Solicitud de reembolso
+        {requirement && (
+          <small className={`action-requirement ${requirement}`}>
+            {requirement === 'required' ? 'Obligatorio' : 'Opcional'}
+          </small>
+        )}
+      </h2>
       <p className="section-desc">Registra la solicitud asociada al caso. El registro queda pendiente de procesamiento.</p>
       <button type="button" className="secondary-button" disabled={form.busy} onClick={() => void form.load()}>
         {form.busy ? 'Procesando reembolso…' : form.loaded ? 'Actualizar reembolso' : 'Consultar reembolso'}

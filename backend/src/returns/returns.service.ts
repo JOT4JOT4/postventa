@@ -4,6 +4,8 @@ import {
 } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { RequestEntity } from '../requests/request.entity';
+import { RequestRegistrationEntity } from '../requests/request-registration.entity';
+import { assertReturnAllowedForType } from '../cases/case-actions';
 import { CaseStatus } from '../cases/case.types';
 import { CreateReturnDto } from './create-return.dto';
 import { DatabaseInventoryReturnGateway, InventoryReturnGateway } from './inventory-return.gateway';
@@ -55,6 +57,8 @@ export class ReturnsService {
       if (caseRecord.status !== CaseStatus.Approved) {
         throw new BadRequestException('Solo se puede registrar una devolución para un caso aprobado.');
       }
+      const registration = await manager.findOne(RequestRegistrationEntity, { where: { requestId: caseId } });
+      assertReturnAllowedForType(registration?.type ?? null);
       if (await manager.exists(ReturnEntity, { where: { caseId } })) {
         throw new ConflictException('El caso ya tiene una devolución registrada.');
       }

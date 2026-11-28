@@ -1,5 +1,6 @@
 import { CaseStatus } from './CaseStatus';
 import { CaseHistory } from './CaseHistory';
+import { getCaseActionsPolicy } from './case-actions';
 import { useCaseManagement } from './use-case-management';
 import { CaseInformation } from './CaseInformation';
 import { CaseStatusForm } from './CaseStatusForm';
@@ -52,6 +53,7 @@ export function CaseManagement({ caseId, onBack }: CaseManagementProps) {
 
   if (!caseDetail) return null;
 
+  const actions = getCaseActionsPolicy(caseDetail.status, caseDetail.type);
 
   return (
     <main id="main-content" tabIndex={-1} className="postventa-page">
@@ -92,8 +94,30 @@ export function CaseManagement({ caseId, onBack }: CaseManagementProps) {
             <CaseInformation caseDetail={caseDetail} />
             <CaseStatusForm management={management} />
             <CaseResolutionForm management={management} />
-            <RefundSection key={caseDetail.id} caseId={caseDetail.id} status={caseDetail.status} />
-            <ReturnSection key={`return-${caseDetail.id}`} caseId={caseDetail.id} status={caseDetail.status} />
+            {actions.pendingNotice && (
+              <section className="case-card case-actions-locked" aria-label="Acciones posteriores al aprobar">
+                <h2 className="card-title"><span>05</span> Acciones posteriores</h2>
+                <p className="resolution-locked-note">{actions.pendingNotice}</p>
+              </section>
+            )}
+            {actions.showReturn && (
+              <ReturnSection
+                key={`return-${caseDetail.id}`}
+                caseId={caseDetail.id}
+                status={caseDetail.status}
+                stepNumber={actions.returnStepNumber}
+                requirement={actions.returnRequirement === 'required' ? 'required' : 'optional'}
+              />
+            )}
+            {actions.showRefund && (
+              <RefundSection
+                key={caseDetail.id}
+                caseId={caseDetail.id}
+                status={caseDetail.status}
+                stepNumber={actions.refundStepNumber}
+                requirement={actions.refundRequirement === 'required' ? 'required' : 'optional'}
+              />
+            )}
           </div>
 
           {/* Lateral History */}

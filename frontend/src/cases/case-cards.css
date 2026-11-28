@@ -43,6 +43,26 @@
   border-radius: 8px;
 }
 
+.action-requirement {
+  margin-left: auto;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.action-requirement.required {
+  background: var(--lego-red-soft);
+  color: var(--dark-red-btn);
+}
+
+.action-requirement.optional {
+  background: var(--surface-subtle);
+  color: var(--text-body);
+  border: 1px solid var(--border-light);
+}
+
 .section-desc {
   color: var(--text-body);
   font-size: 0.88rem;

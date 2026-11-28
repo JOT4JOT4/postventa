@@ -105,3 +105,78 @@ describe('HU-06: formulario de registro y consulta de devoluciones', () => {
     expect(await screen.findByLabelText('Producto a devolver')).toBeInTheDocument();
   });
 });
+
+describe('HU-07: bodega de envío y evidencia de recepción en Inventario', () => {
+  const warehouse = { id: 1, name: 'Bodega Central', address: 'Av. Industrial 1000, Coquimbo' };
+
+  it('muestra la bodega de envío sugerida y estado pendiente tras registrar', async () => {
+    fetchMock
+      .mockResolvedValueOnce(response({ ...data, warehouse, reception: null }))
+      .mockResolvedValueOnce(response(record));
+    const user = await consult();
+    expect(await screen.findByText(/Bodega Central \(#1\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Av\. Industrial 1000, Coquimbo/)).toBeInTheDocument();
+    await fillForm(user);
+    await user.click(screen.getByRole('button', { name: 'Registrar devolución' }));
+    expect(await screen.findByText('Pendiente de recepción')).toBeInTheDocument();
+  });
+
+  it('muestra evidencia cuando Inventario recibe la devolución apta', async () => {
+    fetchMock.mockResolvedValueOnce(response({
+      ...data,
+      returns: [record],
+      warehouse,
+      reception: {
+        status: 'Recibida apta',
+        warehouseId: 1,
+        warehouseName: 'Bodega Central',
+        quantity: 2,
+        recordedAt: '2026-11-24T15:00:00.000Z',
+        movements: [{
+          operationType: 'DEVOLUCION',
+          recordedAt: '2026-11-24T15:00:00.000Z',
+          warehouseId: 1,
+          warehouseName: 'Bodega Central',
+          quantity: 2,
+        }],
+      },
+    }));
+    await consult('Cerrado');
+    expect(await screen.findByText('Recibida apta')).toBeInTheDocument();
+    expect(screen.getByText(/Reingresada al stock disponible \(DEVOLUCION\)/)).toBeInTheDocument();
+  });
+
+  it('muestra evidencia cuando Inventario recibe la devolución con daño', async () => {
+    fetchMock.mockResolvedValueOnce(response({
+      ...data,
+      returns: [record],
+      warehouse,
+      reception: {
+        status: 'Recibida con daño',
+        warehouseId: 1,
+        warehouseName: 'Bodega Central',
+        quantity: 2,
+        recordedAt: '2026-11-24T15:00:00.000Z',
+        movements: [
+          {
+            operationType: 'DEVOLUCION',
+            recordedAt: '2026-11-24T15:00:00.000Z',
+            warehouseId: 1,
+            warehouseName: 'Bodega Central',
+            quantity: 2,
+          },
+          {
+            operationType: 'AJUSTE',
+            recordedAt: '2026-11-24T15:00:00.000Z',
+            warehouseId: 1,
+            warehouseName: 'Bodega Central',
+            quantity: -2,
+          },
+        ],
+      },
+    }));
+    await consult('Cerrado');
+    expect(await screen.findByText('Recibida con daño')).toBeInTheDocument();
+    expect(screen.getByText(/Registrada con daño \/ merma \(DEVOLUCION \+ AJUSTE\)/)).toBeInTheDocument();
+  });
+});
